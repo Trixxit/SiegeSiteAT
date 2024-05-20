@@ -1,0 +1,86 @@
+﻿@using System.Text.Json;
+
+<script src="/js/misc.js"></script>
+
+<div>
+    <label for="usdPrice">Price in USD:</label>
+    <input type="number" id="usdPrice" @bind="usdPrice" />
+
+    <label for="currency">Convert to:</label>
+    <select id="currency" @onchange="ConvertPrice">
+        @foreach (var currency in currencies)
+        {
+            <option value="@currency.Key">@currency.Key</option>
+        }
+    </select>
+
+    <p>Converted Price: @convertedPrice @selectedCurrency</p>
+</div>
+
+@code {
+    private decimal usdPrice = 19.00m;
+    private decimal convertedPrice;
+    private string selectedCurrency = "EUR";
+    private Dictionary<string, decimal> exchangeRates = new Dictionary<string, decimal>();
+    private Dictionary<string, decimal> prefilledExchangeRates = new Dictionary<string, decimal>
+    {
+        { "EUR", 0.85m },
+        { "GBP", 0.75m },
+        { "AUD", 1.35m },
+        { "JPY", 110.0m },
+        { "CAD", 1.25m },
+        { "CHF", 0.91m },
+        { "CNY", 6.45m },
+        { "INR", 74.0m },
+        { "NZD", 1.42m },
+        { "ZAR", 14.5m }
+        // Add more pre-filled exchange rates as needed
+    };
+    private List<KeyValuePair<string, decimal>> currencies;
+
+    [Inject]
+    private IJSRuntime JS { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        bool hasInternet = await JS.InvokeAsync<bool>("checkInternet");
+        await JS.InvokeVoidAsync("logMessage", $"Internet connectivity: {hasInternet}");
+        if (hasInternet)
+        {
+            try
+            {
+                var apiRates = await GetExchangeRatesFromApi();
+                exchangeRates = apiRates;
+                await JS.InvokeVoidAsync("logMessage", "Fetched exchange rates from API");
+            }
+            catch
+            {
+                exchangeRates = prefilledExchangeRates;
+                await JS.InvokeVoidAsync("logMessage", "Failed to fetch exchange rates, using pre-filled rates");
+            }
+        }
+        else
+        {
+            exchangeRates = prefilledExchangeRates;
+            await JS.InvokeVoidAsync("logMessage", "No internet connection, using pre-filled rates");
+        }
+        currencies = exchangeRates.ToList();
+    }
+
+    private async Task<Dictionary<string, decimal>> GetExchangeRatesFromApi()
+    {
+        using var httpClient = new HttpClient();
+        var response = await httpClient.GetStringAsync("https://api.exchangerate-api.com/v4/latest/USD");
+        var rates = JsonDocument.Parse(response).RootElement.GetProperty("rates");
+        return rates.EnumerateObject().ToDictionary(rate => rate.Name, rate => rate.Value.GetDecimal());
+    }
+
+    private void ConvertPrice(ChangeEventArgs e)
+    {
+        selectedCurrency = e.Value.ToString();
+        if (exchangeRates.ContainsKey(selectedCurrency))
+        {
+            convertedPrice = usdPrice * exchangeRates[selectedCurrency];
+        }
+    }
+}
