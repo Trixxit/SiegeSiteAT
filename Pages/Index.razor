@@ -4,74 +4,66 @@
 
 <PageTitle>Home</PageTitle>
 
-<div class="navbar">
-    <div class="logo">
-        <img src="/images/logo1.jpg" alt="FPS Stats Tracker Logo" />
-    </div>
-    <div class="menu">
-        <a href="/">Home</a>
-        <a href="/stats">Stats</a>
-        <a href="/comparisons">Comparisons</a>
-        <a href="/events">Events</a>
-        <a href="/news">News</a>
-        <div class="dropdown">
-            <button class="dropbtn">More 
-                <i class="fa fa-caret-down"></i>
-            </button>
-            <div class="dropdown-content">
-                <a href="/recommendations">Recommendations</a>
-                <a href="/contact">Contact</a>
-            </div>
-        </div>
-    </div>
-    <div class="auth-buttons">
-        <button class="btn-login">Login</button>
-        <button class="btn-signup">Sign Up</button>
-    </div>
-</div>
+<script src="/js/scripts.js"></script>
 
-<header class="title-section">
-    <h1 class="title">Welcome to the FPS Lair</h1>
+<FPSHome.wwwroot.Shared.Menubar/>
+
+<header class="title-section" style="background-image: url('/images/nicelooking.gif');">
+    <h1 class="title">Welcome</h1>
 </header>
 
-<section class="news-section">
-    <div class="news-scroller">
-        <div class="news-item">News Item 1</div>
-        <div class="news-item">News Item 2</div>
-        <div class="news-item">News Item 3</div>
-        <div class="news-item">News Item 4</div>
-        <div class="news-item">News Item 5</div>
-        <div class="news-item">News Item 6</div>
-        <div class="news-item">News Item 7</div>
-    </div>
-</section>
 
-<section class="articles-section">
-    <article>
-        <h3>Article Title 1</h3>
-        <p>Content of the first article...</p>
-    </article>
-    <article>
-        <h3>Article Title 2</h3>
-        <p>Content of the second article...</p>
-    </article>
-    <article>
-        <h3>Article Title 3</h3>
-        <p>Content of the third article...</p>
-    </article>
-    <article>
-        <h3>Article Title 4</h3>
-        <p>Content of the fourth article...</p>
-    </article>
-    <article>
-        <h3>Article Title 5</h3>
-        <p>Content of the fifth article...</p>
-    </article>
-    <article>
-        <h3>Article Title 6</h3>
-        <p>Content of the sixth article...</p>
-    </article>
-</section>
+<div class="page-container">
+    <div class="content">
+        <section class="news-section">
+            <button class="arrow left" onclick="scrollNews(-1)">&#10094;</button>
+            <div class="news-container" id="newsContainer">
+                <div class="news-item" id="newsItem1">
+                    <img src="/images/placeholder.png" alt="News Image 1" />
+                    <h3>News Item 1</h3>
+                    <p class="placeholder">Placeholder content for News Item 1</p>
+                </div>
+                <div class="news-item large" id="newsItem2">
+                    <img src="/images/placeholder.png" alt="News Image 2" />
+                    <h3>News Item 2</h3>
+                    <p class="placeholder">Placeholder content for News Item 2</p>
+                </div>
+                <div class="news-item" id="newsItem3">
+                    <img src="/images/placeholder.png" alt="News Image 3" />
+                    <h3>News Item 3</h3>
+                    <p class="placeholder">Placeholder content for News Item 3</p>
+                </div>
+            </div>
+            <button class="arrow right" onclick="scrollNews(1)">&#10095;</button>
+        </section>
+        <section class="articles-section">
+            <article>
+                <h3>Article Title 1</h3>
+                <p>Content of the first article...</p>
+            </article>
+            <article>
+                <h3>Article Title 2</h3>
+                <p>Content of the second article...</p>
+            </article>
+            <article>
+                <h3>Article Title 3</h3>
+                <p>Content of the third article...</p>
+            </article>
+            <article>
+                <h3>Article Title 4</h3>
+                <p>Content of the fourth article...</p>
+            </article>
+            <article>
+                <h3>Article Title 5</h3>
+                <p>Content of the fifth article...</p>
+            </article>
+            <article>
+                <h3>Article Title 6</h3>
+                <p>Content of the sixth article...</p>
+            </article>
+        </section>
+    </div>
+</div>
 
 <footer class="footer">
     <p>&copy; 2024 FPS Stats Tracker. All rights reserved.</p>
