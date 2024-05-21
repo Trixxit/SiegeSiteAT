@@ -1,6 +1,6 @@
 ﻿@page "/siege/home"
 @using FPSHome
-
+@inject NavigationManager Navigation
 <PageTitle>Home: Rainbow Six Siege</PageTitle>
 
 <FPSHome.wwwroot.Shared.Menubar />
@@ -47,21 +47,22 @@
         <section class="featured-section">
             <h2>Featured Operators</h2>
             <div class="cards-container">
-                <div class="card">
+                <div class="card" @onclick='() => NavigateToOperatorPage("Frost")'>
                     <img src="/images/frostP.png" alt="Frost">
                     <div class="card-content">
-                        <h3>Frost1</h3>
-                        <p>Frost's primary gadget is the "Welcome Mat," a mechanical trap that incapacitates enemies by placing them in a down-but-not-out state when stepped on. These traps are best placed in hidden or hard-to-spot locations, such as under windows or in dark corners, making them effective against careless attackers. </p>
+                        <h3>Frost</h3>
+                        <p>Frost's primary gadget is the "Welcome Mat," a mechanical trap that incapacitates enemies by placing them in a down-but-not-out state when stepped on. These traps are best placed in hidden or hard-to-spot locations, such as under windows or in dark corners, making them effective against careless attackers.</p>
                     </div>
                 </div>
-                <div class="card">
+                <div class="card" @onclick='() => NavigateToOperatorPage("Fuze")'>
                     <img src="/images/fuzeP.png" alt="Fuze">
                     <div class="card-content">
                         <h3>Fuze</h3>
-                        <p>Fuze's Cluster Charges can be mounted on floors, walls, and reinforced surfaces, allowing for versatile deployment. His loadout includes weapons like the AK-12 assault rifle, 6P41 light machine gun, and the Ballistic Shield. Fuze is particularly effective at softening up defender positions and forcing them out of entrenched spots. </p>
+                        <p>Fuze's Cluster Charges can be mounted on floors, walls, and reinforced surfaces, allowing for versatile deployment. His loadout includes weapons like the AK-12 assault rifle, 6P41 light machine gun, and the Ballistic Shield. Fuze is particularly effective at softening up defender positions and forcing them out of entrenched spots.</p>
                     </div>
                 </div>
             </div>
+
         </section>
 
         <section class="store-section">
@@ -91,3 +92,11 @@
 </footer>
 
 <button class="help-button">?</button>
+
+
+@code {
+    private void NavigateToOperatorPage(string operatorName)
+    {
+        Navigation.NavigateTo($"/siege/operator/{operatorName}");
+    }
+}

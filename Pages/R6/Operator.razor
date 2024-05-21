@@ -1,0 +1,136 @@
+﻿@page "/siege/operator"
+@page "/siege/operator/{OperatorName}"
+
+@using System.Net.Http
+@using System.Net.Http.Json
+@using HtmlAgilityPack
+@inject NavigationManager Navigation
+@inject IHttpClientFactory HttpClientFactory
+@inject IJSRuntime JSRuntime
+
+<script src="/js/misc.js"></script>
+
+<PageTitle>@Title</PageTitle>
+
+<h3 class="operator-title">@Title</h3>
+
+@if (IsLoading)
+{
+    <div class="loading-container">
+        <div class="loading-background">
+            <div class="progress-bar">
+                <div class="progress" style="width:@Progress%"></div>
+            </div>
+            <p class="loading-text">@LoadingText (@Progress%)</p>
+        </div>
+    </div>
+}
+else if (!string.IsNullOrEmpty(HtmlContent))
+{
+    <div class="operator-content">
+        @((MarkupString)HtmlContent)
+    </div>
+}
+else
+{
+    <p>Content not found.</p>
+}
+
+@code {
+    [Parameter]
+    public string OperatorName { get; set; }
+
+    private string Title;
+    private string HtmlContent;
+    private bool IsLoading = true;
+    private int Progress = 0;
+    private string LoadingText = "Loading";
+    private int loadingDots = 0;
+    private Timer timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("logMessage", $"OnInitializedAsync: OperatorName = {OperatorName ?? "No Operator"}");
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("logMessage", $"OnParametersSetAsync: OperatorName = {OperatorName ?? "No Operator"}");
+        if (!string.IsNullOrEmpty(OperatorName))
+        {
+            await LoadOperatorPage();
+        }
+    }
+
+    private async Task LoadOperatorPage()
+    {
+        try
+        {
+            IsLoading = true;
+            Progress = 0;
+
+            // Start the timer for loading text animation
+            StartLoadingTextAnimation();
+
+            var url = $"https://rainbowsix.fandom.com/wiki/{OperatorName}";
+
+            // Log the URL call
+            await JSRuntime.InvokeVoidAsync("logMessage", $"Calling fetchWithProgress with URL: {url}");
+
+            // Use JavaScript interop to fetch content with progress tracking
+            HtmlContent = await JSRuntime.InvokeAsync<string>("fetchWithProgress", url, DotNetObjectReference.Create(this));
+
+            var doc = new HtmlDocument();
+            doc.LoadHtml(HtmlContent);
+
+            var contentNode = doc.DocumentNode.SelectSingleNode("//div[@id='mw-content-text']");
+            HtmlContent = contentNode?.InnerHtml ?? "Content not found.";
+
+            Title = doc.DocumentNode.SelectSingleNode("//h1")?.InnerText ?? "Operator Details";
+        }
+        catch (Exception ex)
+        {
+            HtmlContent = $"Error loading page: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+            Progress = 100;
+
+            // Stop the timer when loading is complete
+            StopLoadingTextAnimation();
+        }
+    }
+
+    [JSInvokable]
+    public async Task ReportProgress(int receivedLength, int contentLength)
+    {
+        if (contentLength > 0)
+        {
+            Progress = (int)((double)receivedLength / contentLength * 100);
+
+            // Log the progress
+            await JSRuntime.InvokeVoidAsync("logMessage", $"Progress: {Progress}%");
+
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void StartLoadingTextAnimation()
+    {
+        timer = new Timer(UpdateLoadingText, null, 0, 500);
+    }
+
+    private void StopLoadingTextAnimation()
+    {
+        timer?.Dispose();
+        timer = null;
+    }
+
+    private void UpdateLoadingText(object state)
+    {
+        loadingDots = (loadingDots + 1) % 4;
+        LoadingText = "Loading" + new string('.', loadingDots);
+        InvokeAsync(StateHasChanged);
+    }
+}

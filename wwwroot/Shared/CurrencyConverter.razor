@@ -1,4 +1,4 @@
-﻿@using System.Text.Json;
+﻿@using System.Text.Json
 
 <script src="/js/misc.js"></script>
 
@@ -21,8 +21,8 @@
     private decimal usdPrice = 19.00m;
     private decimal convertedPrice;
     private string selectedCurrency = "EUR";
-    private Dictionary<string, decimal> exchangeRates = new Dictionary<string, decimal>();
-    private Dictionary<string, decimal> prefilledExchangeRates = new Dictionary<string, decimal>
+    private Dictionary<string, decimal> exchangeRates = new();
+    private Dictionary<string, decimal> prefilledExchangeRates = new()
     {
         { "EUR", 0.85m },
         { "GBP", 0.75m },
@@ -36,7 +36,7 @@
         { "ZAR", 14.5m }
         // Add more pre-filled exchange rates as needed
     };
-    private List<KeyValuePair<string, decimal>> currencies;
+    private List<KeyValuePair<string, decimal>> currencies = new();
 
     [Inject]
     private IJSRuntime JS { get; set; }
@@ -50,13 +50,21 @@
             try
             {
                 var apiRates = await GetExchangeRatesFromApi();
-                exchangeRates = apiRates;
-                await JS.InvokeVoidAsync("logMessage", "Fetched exchange rates from API");
+                if (apiRates != null && apiRates.Count > 0)
+                {
+                    exchangeRates = apiRates;
+                    await JS.InvokeVoidAsync("logMessage", "Fetched exchange rates from API");
+                }
+                else
+                {
+                    exchangeRates = prefilledExchangeRates;
+                    await JS.InvokeVoidAsync("logMessage", "Failed to fetch exchange rates, using pre-filled rates");
+                }
             }
-            catch
+            catch (Exception ex)
             {
                 exchangeRates = prefilledExchangeRates;
-                await JS.InvokeVoidAsync("logMessage", "Failed to fetch exchange rates, using pre-filled rates");
+                await JS.InvokeVoidAsync("logMessage", $"Exception fetching exchange rates: {ex.Message}. Using pre-filled rates");
             }
         }
         else
@@ -65,6 +73,7 @@
             await JS.InvokeVoidAsync("logMessage", "No internet connection, using pre-filled rates");
         }
         currencies = exchangeRates.ToList();
+        ConvertPrice(new ChangeEventArgs { Value = selectedCurrency });
     }
 
     private async Task<Dictionary<string, decimal>> GetExchangeRatesFromApi()
@@ -77,10 +86,13 @@
 
     private void ConvertPrice(ChangeEventArgs e)
     {
-        selectedCurrency = e.Value.ToString();
-        if (exchangeRates.ContainsKey(selectedCurrency))
+        if (e?.Value != null)
         {
-            convertedPrice = usdPrice * exchangeRates[selectedCurrency];
+            selectedCurrency = e.Value.ToString();
+            if (exchangeRates.ContainsKey(selectedCurrency))
+            {
+                convertedPrice = usdPrice * exchangeRates[selectedCurrency];
+            }
         }
     }
 }

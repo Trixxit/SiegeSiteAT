@@ -394,3 +394,136 @@ article {
         .store-links a:hover, .external-links a:hover {
             color: #fff;
         }
+
+/* Operator Page Styles */
+.operator-title {
+    font-size: 2.5rem;
+    color: #ffd700;
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.operator-content {
+    padding: 2rem;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 8px;
+    color: white;
+    max-width: 1200px;
+    margin: 2rem auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+    .operator-content h2 {
+        color: #ffd700;
+        margin-top: 1.5rem;
+    }
+
+    .operator-content p,
+    .operator-content li {
+        color: white;
+        line-height: 1.6;
+    }
+
+    .operator-content a {
+        color: #ffd700;
+        text-decoration: none;
+    }
+
+        .operator-content a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+    .operator-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+
+    .operator-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+    }
+
+    .operator-content th,
+    .operator-content td {
+        border: 1px solid #555;
+        padding: 0.5rem;
+        text-align: left;
+    }
+
+    .operator-content th {
+        background-color: #333;
+        color: #ffd700;
+    }
+
+    .operator-content td {
+        background-color: #222;
+    }
+
+    .operator-content .pi-item.pi-data {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+    }
+
+        .operator-content .pi-item.pi-data h3 {
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .operator-content .pi-item.pi-data div {
+            margin: 0;
+        }
+
+    .operator-content .pi-item.pi-group {
+        margin-top: 1rem;
+    }
+
+        .operator-content .pi-item.pi-group table {
+            width: auto;
+            margin: 0;
+        }
+
+/* Loading Animation Styles */
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+}
+
+.loading-background {
+    text-align: center;
+    color: #fff;
+}
+
+.progress-bar {
+    width: 80%;
+    height: 20px;
+    background: #444;
+    border-radius: 10px;
+    margin: 20px auto;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress {
+    height: 100%;
+    background: #ffd700;
+    transition: width 0.1s ease;
+}
+
+.loading-text {
+    color: white;
+    font-size: 1.2rem;
+    margin-top: 10px;
+}
