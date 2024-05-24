@@ -1,0 +1,55 @@
+﻿@code {
+    [Parameter] public int Progress { get; set; }
+    [Parameter] public string LoadingMessage { get; set; } = "Loading, please wait...";
+}
+
+<div class="loading-container">
+    <div class="loading-background">
+        <div class="progress-bar">
+            <div class="progress" style="width:@Progress%"></div>
+        </div>
+        <div class="loading-text">@LoadingMessage</div>
+    </div>
+</div>
+
+<style>
+    .loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100vw;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+    }
+
+    .loading-background {
+        text-align: center;
+        color: #fff;
+    }
+
+    .progress-bar {
+        width: 80%;
+        height: 20px;
+        background: #444;
+        border-radius: 10px;
+        margin: 20px auto;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .progress {
+        height: 100%;
+        background: #ffd700;
+        transition: width 0.1s ease;
+    }
+
+    .loading-text {
+        color: white;
+        font-size: 1.2rem;
+        margin-top: 10px;
+    }
+</style>

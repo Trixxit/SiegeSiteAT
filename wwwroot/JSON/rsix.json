@@ -1,0 +1,847 @@
+{
+  "Sledge": {
+    "attacker": true,
+    "affiliation": "SAS",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "L85A2",
+      "M590A1",
+      "P226 Mk 25",
+      "SMG-11",
+      "Frag Grenade",
+      "Stun Grenade"
+    ]
+  },
+  "Thatcher": {
+    "attacker": true,
+    "affiliation": "SAS",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "AR33",
+      "L85A2",
+      "M590A1",
+      "P226 Mk 25",
+      "Claymore",
+      "Breach Charge"
+    ]
+  },
+  "Smoke": {
+    "attacker": false,
+    "affiliation": "SAS",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "FMG-9",
+      "M590A1",
+      "P226 Mk 25",
+      "SMG-11",
+      "Impact Grenade",
+      "Barbed Wire"
+    ]
+  },
+  "Mute": {
+    "attacker": false,
+    "affiliation": "SAS",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "MP5K",
+      "M590A1",
+      "P226 Mk 25",
+      "SMG-11",
+      "Bulletproof Camera",
+      "Nitro Cell"
+    ]
+  },
+  "Ash": {
+    "attacker": true,
+    "affiliation": "FBI SWAT",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "G36C",
+      "R4-C",
+      "5.7 USG",
+      "M45 MEUSOC",
+      "Breach Charge",
+      "Claymore"
+    ]
+  },
+  "Thermite": {
+    "attacker": true,
+    "affiliation": "FBI SWAT",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "556XI",
+      "M1014",
+      "5.7 USG",
+      "M45 MEUSOC",
+      "Claymore",
+      "Stun Grenade"
+    ]
+  },
+  "Castle": {
+    "attacker": false,
+    "affiliation": "FBI SWAT",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "UMP45",
+      "M1014",
+      "5.7 USG",
+      "M45 MEUSOC",
+      "Bulletproof Camera",
+      "Impact Grenade"
+    ]
+  },
+  "Pulse": {
+    "attacker": false,
+    "affiliation": "FBI SWAT",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "UMP45",
+      "M1014",
+      "5.7 USG",
+      "M45 MEUSOC",
+      "Nitro Cell",
+      "Barbed Wire"
+    ]
+  },
+  "Twitch": {
+    "attacker": true,
+    "affiliation": "GIGN",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "F2",
+      "417",
+      "SG-CQB",
+      "P9",
+      "LFP586",
+      "Claymore",
+      "Breach Charge"
+    ]
+  },
+  "Montagne": {
+    "attacker": true,
+    "affiliation": "GIGN",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "Le Roc",
+      "P9",
+      "LFP586",
+      "Smoke Grenade",
+      "Stun Grenade"
+    ]
+  },
+  "Doc": {
+    "attacker": false,
+    "affiliation": "GIGN",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "MP5",
+      "SG-CQB",
+      "P90",
+      "P9",
+      "LFP586",
+      "Bulletproof Camera",
+      "Barbed Wire"
+    ]
+  },
+  "Rook": {
+    "attacker": false,
+    "affiliation": "GIGN",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "MP5",
+      "SG-CQB",
+      "P90",
+      "P9",
+      "LFP586",
+      "Impact Grenade",
+      "Deployable Shield"
+    ]
+  },
+  "Glaz": {
+    "attacker": true,
+    "affiliation": "Spetsnaz",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "OTs-03",
+      "PMM",
+      "GSH-18",
+      "Frag Grenade",
+      "Smoke Grenade"
+    ]
+  },
+  "Fuze": {
+    "attacker": true,
+    "affiliation": "Spetsnaz",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "6P41",
+      "AK-12",
+      "Ballistic Shield",
+      "PMM",
+      "GSH-18",
+      "Hard Breach Charge",
+      "Smoke Grenade"
+    ]
+  },
+  "Kapkan": {
+    "attacker": false,
+    "affiliation": "Spetsnaz",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "9x19VSN",
+      "SASG-12",
+      "PMM",
+      "GSH-18",
+      "Impact Grenade",
+      "Nitro Cell"
+    ]
+  },
+  "Tachanka": {
+    "attacker": false,
+    "affiliation": "Spetsnaz",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "9x19VSN",
+      "SASG-12",
+      "DP27",
+      "PMM",
+      "GSH-18",
+      "Deployable Shield",
+      "Proximity Alarm"
+    ]
+  },
+  "Blitz": {
+    "attacker": true,
+    "affiliation": "GSG 9",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "G52-Tactical Shield",
+      "P12",
+      "Smoke Grenade",
+      "Breach Charge"
+    ]
+  },
+  "IQ": {
+    "attacker": true,
+    "affiliation": "GSG 9",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "AUG A2",
+      "552 Commando",
+      "G8A1",
+      "P12",
+      "Breach Charge",
+      "Claymore"
+    ]
+  },
+  "J\u00e4ger": {
+    "attacker": false,
+    "affiliation": "GSG 9",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "M870",
+      "416-C Carbine",
+      "P12",
+      "Bulletproof Camera",
+      "Barbed Wire"
+    ]
+  },
+  "Bandit": {
+    "attacker": false,
+    "affiliation": "GSG 9",
+    "yearintroduced": 0,
+    "weaponsused": [
+      "MP7",
+      "M870",
+      "P12",
+      "Nitro Cell",
+      "Barbed Wire"
+    ]
+  },
+  "Buck": {
+    "attacker": true,
+    "affiliation": "JTF2",
+    "yearintroduced": 1,
+    "weaponsused": [
+      "C8-SFW",
+      "CAMRS",
+      "Mk1 9mm",
+      "Frag Grenade",
+      "Hard Breach Charge"
+    ]
+  },
+  "Frost": {
+    "attacker": false,
+    "affiliation": "JTF2",
+    "yearintroduced": 1,
+    "weaponsused": [
+      "Super 90",
+      "9mm C1",
+      "Mk1 9mm",
+      "Bulletproof Camera",
+      "Deployable Shield"
+    ]
+  },
+  "Blackbeard": {
+    "attacker": true,
+    "affiliation": "SEALs",
+    "yearintroduced": 1,
+    "weaponsused": [
+      "Mk17 CQB",
+      "SR-25",
+      "D-50",
+      "Breach Charge",
+      "Stun Grenade"
+    ]
+  },
+  "Valkyrie": {
+    "attacker": false,
+    "affiliation": "SEALs",
+    "yearintroduced": 1,
+    "weaponsused": [
+      "MPX",
+      "SPAS-12",
+      "D-50",
+      "Nitro Cell",
+      "Impact Grenade"
+    ]
+  },
+  "Capit\u00e3o": {
+    "attacker": true,
+    "affiliation": "BOPE",
+    "yearintroduced": 1,
+    "weaponsused": [
+      "M249",
+      "PARA-308",
+      "PRB92",
+      "Hard Breach Charge",
+      "Stun Grenade"
+    ]
+  },
+  "Caveira": {
+    "attacker": false,
+    "affiliation": "BOPE",
+    "yearintroduced": 1,
+    "weaponsused": [
+      "M12",
+      "SPAS-15",
+      "Luison",
+      "Impact Grenade",
+      "Bulletproof Camera"
+    ]
+  },
+  "Hibana": {
+    "attacker": true,
+    "affiliation": "SAT",
+    "yearintroduced": 1,
+    "weaponsused": [
+      "TYPE-89",
+      "SuperNova",
+      "P229",
+      "Bearing 9",
+      "Impact EMP Grenade",
+      "Stun Grenade"
+    ]
+  },
+  "Echo": {
+    "attacker": false,
+    "affiliation": "SAT",
+    "yearintroduced": 1,
+    "weaponsused": [
+      "MP5SD",
+      "SuperNova",
+      "P229",
+      "Bearing 9",
+      "Bulletproof Camera",
+      "Impact Grenade"
+    ]
+  },
+  "Jackal": {
+    "attacker": true,
+    "affiliation": "GEO",
+    "yearintroduced": 2,
+    "weaponsused": [
+      "C7E",
+      "PDW9",
+      "ITA12L",
+      "USP40",
+      "ITA12S",
+      "Claymore",
+      "Smoke Grenade"
+    ]
+  },
+  "Mira": {
+    "attacker": false,
+    "affiliation": "GEO",
+    "yearintroduced": 2,
+    "weaponsused": [
+      "VECTOR .45 ACP",
+      "ITA12L",
+      "USP40",
+      "ITA12S",
+      "Nitro Cell",
+      "Barbed Wire"
+    ]
+  },
+  "Ying": {
+    "attacker": true,
+    "affiliation": "SDU",
+    "yearintroduced": 2,
+    "weaponsused": [
+      "T-95 LSW",
+      "SIX12",
+      "Q929",
+      "Breach Charge",
+      "Smoke Grenade"
+    ]
+  },
+  "Lesion": {
+    "attacker": false,
+    "affiliation": "SDU",
+    "yearintroduced": 2,
+    "weaponsused": [
+      "SIX12 SD",
+      "T-5 SMG",
+      "Q929",
+      "Impact Grenade",
+      "Bulletproof Camera"
+    ]
+  },
+  "Zofia": {
+    "attacker": true,
+    "affiliation": "GROM",
+    "yearintroduced": 2,
+    "weaponsused": [
+      "LMG-E",
+      "M762",
+      "RG15",
+      "Breach Charge",
+      "Claymore"
+    ]
+  },
+  "Ela": {
+    "attacker": false,
+    "affiliation": "GROM",
+    "yearintroduced": 2,
+    "weaponsused": [
+      "Scorpion EVO 3 A1",
+      "FO-12",
+      "RG15",
+      "Barbed Wire",
+      "Deployable Shield"
+    ]
+  },
+  "Dokkaebi": {
+    "attacker": true,
+    "affiliation": "707th SMB",
+    "yearintroduced": 2,
+    "weaponsused": [
+      "Mk 14 EBR",
+      "BOSG.12.2",
+      "C75 Auto",
+      "SMG-12",
+      "Smoke Grenade",
+      "Stun Grenade"
+    ]
+  },
+  "Vigil": {
+    "attacker": false,
+    "affiliation": "707th SMB",
+    "yearintroduced": 2,
+    "weaponsused": [
+      "K1A",
+      "BOSG.12.2",
+      "C75 Auto",
+      "SMG-12",
+      "Impact Grenade",
+      "Bulletproof Camera"
+    ]
+  },
+  "Lion": {
+    "attacker": true,
+    "affiliation": "CBRN",
+    "yearintroduced": 3,
+    "weaponsused": [
+      "V308",
+      "417",
+      "SG-CQB",
+      "P9",
+      "LFP586",
+      "Stun Grenade",
+      "Claymore"
+    ]
+  },
+  "Finka": {
+    "attacker": true,
+    "affiliation": "CBRN",
+    "yearintroduced": 3,
+    "weaponsused": [
+      "Spear .308",
+      "6P41",
+      "SASG-12",
+      "PMM",
+      "GSH-18",
+      "Frag Grenade",
+      "Stun Grenade"
+    ]
+  },
+  "Maestro": {
+    "attacker": false,
+    "affiliation": "GIS",
+    "yearintroduced": 3,
+    "weaponsused": [
+      "ALDA 5.56",
+      "ACS12",
+      "KERATOS .357",
+      "Bailiff 410",
+      "Barbed Wire",
+      "Deployable Shield"
+    ]
+  },
+  "Alibi": {
+    "attacker": false,
+    "affiliation": "GIS",
+    "yearintroduced": 3,
+    "weaponsused": [
+      "Mx4 Storm",
+      "ACS12",
+      "KERATOS .357",
+      "Bailiff 410",
+      "Impact Grenade",
+      "Deployable Shield"
+    ]
+  },
+  "Maverick": {
+    "attacker": true,
+    "affiliation": "GSUTR",
+    "yearintroduced": 3,
+    "weaponsused": [
+      "M4",
+      "AR-15.50",
+      "1911 TACOPS",
+      "Smoke Grenade",
+      "Claymore"
+    ]
+  },
+  "Clash": {
+    "attacker": false,
+    "affiliation": "GSUTR",
+    "yearintroduced": 3,
+    "weaponsused": [
+      "CCE Shield",
+      "SPSMG9",
+      "P-10C",
+      "Barbed Wire",
+      "Impact Grenade"
+    ]
+  },
+  "Nomad": {
+    "attacker": true,
+    "affiliation": "GIGR",
+    "yearintroduced": 3,
+    "weaponsused": [
+      "AK-74M",
+      "ARX200",
+      "44 Mag Semi-Auto",
+      "Stun Grenade",
+      "Breach Charge"
+    ]
+  },
+  "Kaid": {
+    "attacker": false,
+    "affiliation": "GIGR",
+    "yearintroduced": 3,
+    "weaponsused": [
+      "AUG A3",
+      "TCSG12",
+      "44 Mag Semi-Auto",
+      "Barbed Wire",
+      "Nitro Cell"
+    ]
+  },
+  "Gridlock": {
+    "attacker": true,
+    "affiliation": "SASR",
+    "yearintroduced": 4,
+    "weaponsused": [
+      "F90",
+      "M249",
+      "Super Shorty",
+      "SDP 9mm",
+      "Smoke Grenade",
+      "Breach Charge"
+    ]
+  },
+  "Mozzie": {
+    "attacker": false,
+    "affiliation": "SASR",
+    "yearintroduced": 4,
+    "weaponsused": [
+      "Commando 9",
+      "P10 RONI",
+      "Super Shorty",
+      "SDP 9mm",
+      "Barbed Wire",
+      "Nitro Cell"
+    ]
+  },
+  "N\u00f8kk": {
+    "attacker": true,
+    "affiliation": "Jaeger Corps",
+    "yearintroduced": 4,
+    "weaponsused": [
+      "FMG-9",
+      "SIX12 SD",
+      "5.7 USG",
+      "D-50",
+      "Hard Breach Charge",
+      "Frag Grenade"
+    ]
+  },
+  "Warden": {
+    "attacker": false,
+    "affiliation": "Secret Service",
+    "yearintroduced": 4,
+    "weaponsused": [
+      "M590A1",
+      "MPX",
+      "P-10C",
+      "SMG-12",
+      "Impact Grenade",
+      "Deployable Shield"
+    ]
+  },
+  "Amaru": {
+    "attacker": true,
+    "affiliation": "APCA",
+    "yearintroduced": 4,
+    "weaponsused": [
+      "G8A1",
+      "SuperNova",
+      "SMG-11",
+      "GONNE-6",
+      "Hard Breach Charge",
+      "Stun Grenade"
+    ]
+  },
+  "Goyo": {
+    "attacker": false,
+    "affiliation": "FES",
+    "yearintroduced": 4,
+    "weaponsused": [
+      "VECTOR .45 ACP",
+      "TCSG12",
+      "P229",
+      "Proximity Alarm",
+      "Nitro Cell"
+    ]
+  },
+  "Kali": {
+    "attacker": true,
+    "affiliation": "NIGHTHAVEN",
+    "yearintroduced": 4,
+    "weaponsused": [
+      "CSRX 300",
+      "SPSMG9",
+      "C75 Auto",
+      "Claymore",
+      "Breach Charge"
+    ]
+  },
+  "Wamai": {
+    "attacker": false,
+    "affiliation": "NIGHTHAVEN",
+    "yearintroduced": 4,
+    "weaponsused": [
+      "AUG A2",
+      "Mp5k",
+      "D-40",
+      "Barbed Wire",
+      "Deployable Shield"
+    ]
+  },
+  "Iana": {
+    "attacker": true,
+    "affiliation": "REU",
+    "yearintroduced": 5,
+    "weaponsused": [
+      "ARX200",
+      "G36C",
+      "Mk1 9mm",
+      "Smoke Grenade",
+      "Frag Grenade"
+    ]
+  },
+  "Oryx": {
+    "attacker": false,
+    "affiliation": "GIGR",
+    "yearintroduced": 5,
+    "weaponsused": [
+      "SPAS-12",
+      "MP5",
+      "Bailiff 410",
+      "USP40",
+      "Barbed Wire",
+      "Bulletproof Camera"
+    ]
+  },
+  "Ace": {
+    "attacker": true,
+    "affiliation": "NIGHTHAVEN",
+    "yearintroduced": 5,
+    "weaponsused": [
+      "AK-12",
+      "M1014",
+      "P9",
+      "Smoke Grenade",
+      "Claymore"
+    ]
+  },
+  "Melusi": {
+    "attacker": false,
+    "affiliation": "ITF",
+    "yearintroduced": 5,
+    "weaponsused": [
+      "MP5",
+      "Super 90",
+      "RG15",
+      "Impact Grenade",
+      "Bulletproof Camera"
+    ]
+  },
+  "Zero": {
+    "attacker": true,
+    "affiliation": "ROS",
+    "yearintroduced": 5,
+    "weaponsused": [
+      "SC3000K",
+      "MP7",
+      "5.7 USG",
+      "Breach Charge",
+      "Claymore"
+    ]
+  },
+  "Aruni": {
+    "attacker": false,
+    "affiliation": "NIGHTHAVEN",
+    "yearintroduced": 5,
+    "weaponsused": [
+      "P10 RONI",
+      "Mk 14 EBR",
+      "PRB92",
+      "Barbed Wire",
+      "Bulletproof Camera"
+    ]
+  },
+  "Flores": {
+    "attacker": true,
+    "affiliation": "LOS",
+    "yearintroduced": 6,
+    "weaponsused": [
+      "AR33",
+      "SR-25",
+      "GSH-18",
+      "Claymore",
+      "Stun Grenade"
+    ]
+  },
+  "Thunderbird": {
+    "attacker": false,
+    "affiliation": "NIGHTHAVEN",
+    "yearintroduced": 6,
+    "weaponsused": [
+      "Spear .308",
+      "SPAS-15",
+      "Bearing 9",
+      "Q-929",
+      "Barbed Wire",
+      "Impact Grenade"
+    ]
+  },
+  "Osa": {
+    "attacker": true,
+    "affiliation": "NIGHTHAVEN",
+    "yearintroduced": 6,
+    "weaponsused": [
+      "556XI",
+      "PDW9",
+      "PMM",
+      "Smoke Grenade",
+      "Claymore"
+    ]
+  },
+  "Thorn": {
+    "attacker": false,
+    "affiliation": "GSUTR",
+    "yearintroduced": 6,
+    "weaponsused": [
+      "UZK50GI",
+      "M870",
+      "1911 TACOPS",
+      "Barbed Wire",
+      "Deployable Shield"
+    ]
+  },
+  "Sens": {
+    "attacker": true,
+    "affiliation": "GSUTR",
+    "yearintroduced": 7,
+    "weaponsused": [
+      "Pof-9",
+      "417",
+      "GONNE-6",
+      "Bailiff 410",
+      "Smoke Grenade",
+      "Hard Breach Charge"
+    ]
+  },
+  "Solis": {
+    "attacker": false,
+    "affiliation": "ITF",
+    "yearintroduced": 7,
+    "weaponsused": [
+      "P90",
+      "ITA12S",
+      "SMG-11",
+      "Impact Grenade",
+      "Bulletproof Camera"
+    ]
+  },
+  "Brava": {
+    "attacker": true,
+    "affiliation": "BOPE",
+    "yearintroduced": 8,
+    "weaponsused": [
+      "Para-308",
+      "CAMRS",
+      "USP40",
+      "Breach Charge",
+      "Claymore"
+    ]
+  },
+  "Deimos": {
+    "attacker": true,
+    "affiliation": "Keras Legion",
+    "yearintroduced": 9,
+    "weaponsused": [
+      "Vector",
+      "Mk 14 EBR",
+      "Keratos .357",
+      "Impact EMP Grenade",
+      "Claymore"
+    ]
+  },
+  "Fenrir": {
+    "attacker": false,
+    "affiliation": "None",
+    "yearintroduced": 8,
+    "weaponsused": [
+      "MP7",
+      "SASG-12",
+      "Bailiff 410",
+      "5.7 USG",
+      "Barbed Wire",
+      "Bulletproof Camera"
+    ]
+  }
+}

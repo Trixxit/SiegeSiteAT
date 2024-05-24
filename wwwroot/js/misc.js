@@ -6,35 +6,29 @@ window.logMessage = function (message) {
     console.log(message);
 };
 
-window.fetchWithProgress = async function (url, dotNetObjRef) {
-    console.log("fetchWithProgress called with URL:", url);
+window.openNew = function (url) {
+    window.open(url, '_blank');
+};
+
+window.fetchData = async function (url) {
+    console.log(`Fetching and converting ${url}...`);
     const response = await fetch(url);
-    const reader = response.body.getReader();
-    const contentLength = +response.headers.get('Content-Length');
+    const text = await response.text();
+    console.log(`Fetched and converted ${url}!`);
+    return text;
+};
 
-    let receivedLength = 0;
-    const chunks = [];
 
-    while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
 
-        chunks.push(value);
-        receivedLength += value.length;
 
-        console.log("Progress:", receivedLength, contentLength); // Log progress
-        await dotNetObjRef.invokeMethodAsync('ReportProgress', receivedLength, contentLength);
+window.fetchWithCorsAnywhere = async function (url) {
+    const corsProxy = "https://cors-anywhere.herokuapp.com/";
+    const fullUrl = corsProxy + url;
+
+    const response = await fetch(fullUrl);
+    if (!response.ok) {
+        throw new Error('Network response was not ok ' + response.statusText);
     }
-
-    const chunksAll = new Uint8Array(receivedLength);
-    let position = 0;
-    for (let chunk of chunks) {
-        chunksAll.set(chunk, position);
-        position += chunk.length;
-    }
-
-    const result = new TextDecoder("utf-8").decode(chunksAll);
-    console.log("Fetch complete"); 
-
-    return result;
+    const text = await response.text();
+    return text;
 };

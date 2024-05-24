@@ -1,0 +1,32 @@
+﻿@page "/"
+@using FPSHome.Services
+@using FPSHome
+@inject InitializationService InitializationService
+@inject NavigationManager Navigator
+
+<FPSHome.wwwroot.Shared.Loading Progress="@progress" LoadingMessage="Initializing data..."></FPSHome.wwwroot.Shared.Loading>
+
+@code {
+    private int progress = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        InitializationService.OnProgressChanged += (value) =>
+        {
+            progress = value;
+            InvokeAsync(StateHasChanged);
+        };
+
+        InitializationService.OnProgressCompleted += () =>
+        {
+            NavigateToHome();
+        };
+
+        await InitializationService.Initialize();
+    }
+
+    private void NavigateToHome()
+    {
+        Navigator.NavigateTo("/home");
+    }
+}

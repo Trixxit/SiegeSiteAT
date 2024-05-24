@@ -1,6 +1,8 @@
 ﻿@page "/siege/home"
 @using FPSHome
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
+
 <PageTitle>Home: Rainbow Six Siege</PageTitle>
 
 <FPSHome.wwwroot.Shared.Menubar />
@@ -27,14 +29,14 @@
         <section class="featured-section">
             <h2>Featured Maps</h2>
             <div class="cards-container">
-                <div class="card">
+                <div class="card" @onclick='() => NavigateToOperatorPage("Kafe_Dostoyevsky")'>
                     <img src="/images/KafeM.png" alt="Kafe Dostoyevsky">
                     <div class="card-content">
                         <h3>Kafe Dostoyevsky</h3>
                         <p>Kafe Dostoyevsky is a high-class café in central Moscow, known for its rich, chic, and classic decor. The map features multiple floors, including a basement, ground floor, first floor, and a roof. It's popular for its destructibility, allowing for vertical play, and is a favorite in both casual and competitive play. </p>
                     </div>
                 </div>
-                <div class="card">
+                <div class="card" @onclick='() => NavigateToOperatorPage("Lair")'>
                     <img src="/images/LairM.png" alt="Lair">
                     <div class="card-content">
                         <h3>Lair</h3>
@@ -62,7 +64,6 @@
                     </div>
                 </div>
             </div>
-
         </section>
 
         <section class="store-section">
@@ -95,8 +96,9 @@
 
 
 @code {
-    private void NavigateToOperatorPage(string operatorName)
+    private async Task NavigateToOperatorPage(string operatorName)
     {
-        Navigation.NavigateTo($"/siege/operator/{operatorName}");
+        var url = $"https://rainbowsix.fandom.com/wiki/{operatorName}";
+        await JS.InvokeVoidAsync("openNew", url);
     }
 }

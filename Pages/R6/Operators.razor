@@ -1,0 +1,130 @@
+﻿@page "/siege/operators"
+@inject IJSRuntime JS
+@inject HttpClient Http
+@using System.Text.Json
+@using FPSHome
+
+<PageTitle>Siege Operators</PageTitle>
+<FPSHome.wwwroot.Shared.Menubar/>
+
+
+<div class="page-container">
+    <div class="navbar">
+        <div class="logo">
+            <img src="/images/logo.png" alt="Logo">
+        </div>
+        <div class="menu">
+            <div class="filter-container">
+                <select class="filter-dropdown" @onchange="e => { filterAffiliation = e.Value.ToString(); FilterOperators(); }">
+                    <option value="All">All Affiliations</option>
+                    @foreach (var affiliation in affiliations)
+                    {
+                        <option value="@affiliation">@affiliation</option>
+                    }
+                </select>
+                <select class="filter-dropdown" @onchange="e => { filterRole = e.Value.ToString(); FilterOperators(); }">
+                    <option value="All">All Roles</option>
+                    <option value="Attacker">Attacker</option>
+                    <option value="Defender">Defender</option>
+                </select>
+                <select class="filter-dropdown" @onchange="e => { filterWeapon = e.Value.ToString(); FilterOperators(); }">
+                    <option value="All">All Weapons</option>
+                    @foreach (var weapon in weapons)
+                    {
+                        <option value="@weapon">@weapon</option>
+                    }
+                </select>
+                <select class="filter-dropdown" @onchange="e => { filterYearIntroduced = int.Parse(e.Value.ToString()); FilterOperators(); }">
+                    <option value="0">All Years</option>
+                    @foreach (var year in yearsIntroduced)
+                    {
+                        <option value="@year">@year</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="cards-container">
+        @foreach (var op in filteredOperators)
+        {
+            <div class="card-with-effects" @onclick="() => NavigateToOperatorPage(op.Name)">
+                <div class="image-container">
+                    <img src=@($"/images/{op.Name.ToLower()}_body.png") alt="@op.Name Icon" class="big-image">
+                    <div class="image-fade"></div>
+                    <img src=@($"/images/{op.Name.ToLower()}_icon.png") alt="Small Icon" class="small-image">
+                </div>
+                <div class="card-content">
+                    <h3>@op.Name</h3>
+                    <p>Affiliation: @op.affiliation</p>
+                    <p>Role: @(op.attacker ? "Attacker" : "Defender")</p>
+                    <p>Year Introduced: @op.yearintroduced</p>
+                    <p>Weapons Used: @(string.Join(", ", op.weaponsused))</p>
+                </div>
+            </div>
+        }
+    </div>
+
+
+
+
+
+</div>
+
+@code {
+    private class Operator
+    {
+        
+        public bool attacker { get; set; }
+        public string affiliation { get; set; }
+        public int yearintroduced { get; set; }
+        public List<string> weaponsused { get; set; }
+        public string Name { get; set; }
+    }
+
+    private List<Operator> operators = new();
+    private List<Operator> filteredOperators = new();
+    private List<string> affiliations = new();
+    private List<string> weapons = new();
+    private List<int> yearsIntroduced = new();
+    private string filterAffiliation = "All";
+    private string filterRole = "All";
+    private string filterWeapon = "All";
+    private int filterYearIntroduced = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        operators = await LoadOperators();
+        affiliations = operators.Select(o => o.affiliation).Distinct().ToList();
+        weapons = operators.SelectMany(o => o.weaponsused).Distinct().ToList();
+        yearsIntroduced = operators.Select(o => o.yearintroduced).Distinct().ToList();
+        filteredOperators = operators;
+    }
+
+    private async Task<List<Operator>> LoadOperators()
+    {
+        var json = await Http.GetStringAsync("/JSON/rsix.json");
+        var operatorsDictionary = JsonSerializer.Deserialize<Dictionary<string, Operator>>(json);
+        foreach (var key in operatorsDictionary.Keys)
+        {
+            operatorsDictionary[key].Name = key;
+        }
+        return operatorsDictionary.Values.ToList();
+    }
+
+    private void FilterOperators()
+    {
+        filteredOperators = operators
+            .Where(o => (filterAffiliation == "All" || o.affiliation == filterAffiliation) &&
+                        (filterRole == "All" || (filterRole == "Attacker" && o.attacker) || (filterRole == "Defender" && !o.attacker)) &&
+                        (filterWeapon == "All" || o.weaponsused.Contains(filterWeapon)) &&
+                        (filterYearIntroduced == 0 || o.yearintroduced == filterYearIntroduced))
+            .ToList();
+    }
+
+    private async Task NavigateToOperatorPage(string operatorName)
+    {
+        var url = $"https://rainbowsix.fandom.com/wiki/{operatorName}";
+        await JS.InvokeVoidAsync("openNew", url);
+    }
+}

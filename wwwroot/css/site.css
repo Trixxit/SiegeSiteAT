@@ -345,13 +345,14 @@ article {
         color: #ffd700;
     }
 
+
 .cards-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
 }
 
-.card {
+.card, .card-with-effects {
     background-color: rgba(0, 0, 0, 0.8);
     border-radius: 8px;
     margin: 1rem;
@@ -360,21 +361,73 @@ article {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s, box-shadow 0.3s;
     color: white;
+    position: relative;
 }
 
-    .card img {
-        width: 100%;
+    .card img, .card-with-effects img {
         border-radius: 8px;
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+
+    .card-with-effects .image-container {
+        position: relative;
+        width: 100%;
+        height: 200px; /* Adjust as needed */
+        overflow: hidden;
+    }
+
+    .card-with-effects .big-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Ensures the image covers the container */
+        object-position: top; /* Ensures the top half of the image is displayed */
+    }
+
+    .card-with-effects .image-fade {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 50%; /* Adjust as needed */
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%);
+    }
+
+    .card-with-effects .small-image {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 2px solid white;
     }
 
 .card-content {
     margin-top: 1rem;
 }
 
-.card:hover {
+.card:hover, .card-with-effects:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
 }
+
+@media (max-width: 768px) {
+    .card, .card-with-effects {
+        width: calc(50% - 2rem);
+    }
+}
+
+@media (max-width: 480px) {
+    .card, .card-with-effects {
+        width: calc(100% - 2rem);
+    }
+}
+
+
+
+
 
 .store-links, .external-links {
     list-style-type: none;
@@ -487,7 +540,7 @@ article {
             margin: 0;
         }
 
-/* Loading Animation Styles */
+
 .loading-container {
     display: flex;
     justify-content: center;
@@ -527,3 +580,157 @@ article {
     font-size: 1.2rem;
     margin-top: 10px;
 }
+
+
+.filter-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.filter-dropdown {
+    background-color: rgba(52, 58, 64, 0.9);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+    .filter-dropdown:hover, .filter-dropdown:focus {
+        background-color: #444;
+        color: #ffd700;
+        outline: none;
+    }
+
+    .filter-dropdown option {
+        background-color: #333;
+        color: white;
+    }
+
+
+
+
+
+
+
+
+
+.stats-container {
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    max-width: 1200px;
+    margin: 2rem auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.stats-header {
+    text-align: center;
+    color: #ffd700;
+    margin-bottom: 2rem;
+}
+
+.stats-filter {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+    .stats-filter input,
+    .stats-filter select {
+        background-color: rgba(52, 58, 64, 0.9);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s, color 0.3s;
+        margin: 0.5rem;
+    }
+
+        .stats-filter input:hover,
+        .stats-filter select:hover,
+        .stats-filter input:focus,
+        .stats-filter select:focus {
+            background-color: #444;
+            color: #ffd700;
+            outline: none;
+        }
+
+.stats-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.stat-item {
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 8px;
+    margin: 1rem;
+    padding: 1rem;
+    width: calc(33% - 2rem);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+    color: white;
+    position: relative;
+}
+
+    .stat-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    }
+
+.chart-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 2rem auto;
+}
+
+
+.collapsible-container {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 5px;
+    margin: 1rem 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.collapsible-button {
+    background-color: rgba(52, 58, 64, 0.9);
+    color: white;
+    border: none;
+    padding: 1rem;
+    text-align: left;
+    width: 100%;
+    font-size: 1rem;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.3s;
+    border-radius: 5px;
+}
+
+    .collapsible-button:hover {
+        background-color: #444;
+        color: #ffd700;
+    }
+
+.collapsible-content {
+    padding: 0 1rem;
+    display: none;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 0 0 5px 5px;
+    transition: max-height 0.3s ease-out;
+}
+
+    .collapsible-content p {
+        margin: 1rem 0;
+        color: white;
+    }

@@ -1,0 +1,321 @@
+﻿@page "/siege/stats"
+@using System.Text.Json
+@using FPSHome
+@using FPSHome.Services
+@using Microsoft.AspNetCore.Components.Web
+@using System.Linq
+@using System.Collections.Generic
+
+@inject IJSRuntime JS
+@inject HttpClient Http
+@inject InitializationService InitService
+
+<PageTitle>Siege Stats</PageTitle>
+<FPSHome.wwwroot.Shared.Menubar />
+
+<div class="filter-container">
+    <select @onchange="HandleUsernameChange" class="filter-dropdown">
+        <option value="">Select Username</option>
+        @foreach (var username in usernames)
+        {
+            <option value="@username">@username</option>
+        }
+    </select>
+
+    <select @onchange="HandleOperatorChange" class="filter-dropdown">
+        <option value="">Select Operator</option>
+        @foreach (var op in operators)
+        {
+            <option value="@op">@op</option>
+        }
+    </select>
+
+    <select @onchange="HandleMapChange" class="filter-dropdown">
+        <option value="">Select Map</option>
+        @foreach (var map in maps)
+        {
+            <option value="@map">@map</option>
+        }
+    </select>
+
+    <select @onchange="HandleWeaponChange" class="filter-dropdown">
+        <option value="">Select Weapon</option>
+        @foreach (var weapon in weapons)
+        {
+            <option value="@weapon">@weapon</option>
+        }
+    </select>
+</div>
+
+@if (filteredData != null)
+{
+    <div class="stats-container">
+        <h2 class="stats-header" id="osh2">Overall Stats @Title</h2>
+        <div class="stats-content">
+            <div class="stat-item">
+                <h3>Total Kills</h3>
+                <p>@totalKills</p>
+            </div>
+            <div class="stat-item">
+                <h3>Total Deaths</h3>
+                <p>@totalDeaths</p>
+            </div>
+            <div class="stat-item">
+                <h3>Average KD</h3>
+                <p>@(totalDeaths > 0 ? (double)totalKills / totalDeaths : 0):0.00</p>
+            </div>
+            <div class="stat-item">
+                <h3>Highest KD</h3>
+                <p>@highestKD:0.00</p>
+            </div>
+            <div class="stat-item">
+                <h3>Lowest KD</h3>
+                <p>@lowestKD:0.00</p>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(selectedMap))
+            {
+                <div class="stat-item">
+                    <h3>Better attacker or defender</h3>
+                    <p>@(bestRole == "attacker" ? "Attacker" : "Defender")</p>
+                </div>
+            }
+            @if (!string.IsNullOrWhiteSpace(selectedOperator))
+            {
+                <div class="stat-item">
+                    <h3>Best Weapon</h3>
+                    <p>@bestWeapon</p>
+                </div>
+            }
+            @if (!string.IsNullOrWhiteSpace(selectedUsername))
+            {
+                <div class="stat-item">
+                    <h3>Best Map</h3>
+                    <p>@bestMap</p>
+                </div>
+                <div class="stat-item">
+                    <h3>Best Operator</h3>
+                    <p>@bestOperator</p>
+                </div>
+                <div class="stat-item">
+                    <h3>Best Weapon</h3>
+                    <p>@bestWeapon</p>
+                </div>
+            }
+            @if (!string.IsNullOrWhiteSpace(selectedOperator) && string.IsNullOrWhiteSpace(selectedUsername))
+            {
+                <div class="stat-item">
+                    <h3>Best User</h3>
+                    <p>@bestUser</p>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="stats-container">
+        <h2 class="stats-header">Filtered Stats</h2>
+        <div class="stats-content">
+            @foreach (var kd in filteredData)
+            {
+                var username = InitService.Userdata.FirstOrDefault(u => u.Value.Kds.Contains(kd)).Key;
+                var kills = new Dictionary<string, int>();
+                int tk = 0;
+
+                foreach (var kill in kd.Kills)
+                {
+                    if (!kills.TryAdd(kill.Weapon, 1))
+                        kills[kill.Weapon] = kills[kill.Weapon] + 1;
+                    tk++;
+                }
+
+                <div class="stat-item">
+                    @if (string.IsNullOrEmpty(selectedUsername))
+                    {
+                        <p>Username: @username</p>
+                    }
+                    <p>Operator: @kd.Op</p>
+                    <p>Deaths: @kd.Deaths</p>
+                    <p>Map: @kd.Map</p>
+                    <p>Hours Played at Submission: @kd.HoursPlayedAtSubmission</p>
+                    <p>Total Kills: @tk</p>
+                    <div class="collapsible-container">
+                        <button class="collapsible-button" @onclick="() => ToggleContent(kd.GetHashCode())">Kills</button>
+                        <div class="collapsible-content" style="@GetContentStyle(kd.GetHashCode())">
+                            @foreach (var item in kills)
+                            {
+                                <p>@item.Key: @item.Value</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private List<string> operators = new List<string>
+    {
+        "Sledge", "Thatcher", "Smoke", "Mute", "Ash", "Thermite", "Castle", "Pulse", "Twitch", "Montagne",
+        "Doc", "Rook", "Glaz", "Fuze", "Kapkan", "Tachanka", "Blitz", "IQ", "Jäger", "Bandit", "Buck",
+        "Frost", "Blackbeard", "Valkyrie", "Capitão", "Caveira", "Hibana", "Echo", "Jackal", "Mira",
+        "Ying", "Lesion", "Zofia", "Ela", "Dokkaebi", "Vigil", "Lion", "Finka", "Maestro", "Alibi",
+        "Maverick", "Clash", "Nomad", "Kaid", "Gridlock", "Mozzie", "Nøkk", "Warden", "Amaru", "Goyo",
+        "Kali", "Wamai", "Iana", "Oryx", "Ace", "Melusi", "Zero", "Aruni", "Flores", "Thunderbird",
+        "Osa", "Thorn", "Sens", "Solis", "Brava", "Deimos", "Fenrir"
+    };
+
+    private List<string> maps = new List<string>
+    {
+        "Bank", "Lair", "Nighthaven Labs", "Chalet", "Clubhouse", "Coastline", "Consulate", "Oregon",
+        "Outback", "Skyscraper", "Emerald Plains", "Theme Park", "Villa", "Kafe Dostoyevsky", "Kanal"
+    };
+
+    private List<string> weapons = new List<string>
+    {
+        "ALDA 5.56", "Nitro Cell", "Vector", "SPAS-12", "Super Shorty", "MPX", "Mx4 Storm", "SPSMG9", "44 Mag Semi-Auto", "R4-C", "Deployable Shield", "M1014", "Impact EMP Grenade", "1911 TACOPS", "9mm C1", "DP27", "556XI", "SMG-11", "Breach Charge", "G36C", "M4", "Claymore", "417", "T-95 LSW", "Scorpion EVO 3 A1", "SR-25", "SIX12 SD", "SG-CQB", "Bulletproof Camera", "AR33", "Stun Grenade", "TYPE-89", "BOSG.12.2", "Commando 9", "VECTOR .45 ACP", "G52-Tactical Shield", "SuperNova", "Q929", "6P41", "AR-15.50", "Bailiff 410", "Keratos .357", "D-40", "MP7", "UMP45", "Bearing 9", "SDP 9mm", "D-50", "AK-74M", "AUG A3", "USP40", "9x19VSN", "MP5", "Mk17 CQB", "PARA-308", "Luison", "M249", "K1A", "P10 RONI", "CCE Shield", "Super 90", "OTs-03", "P226 Mk 25", "T-5 SMG", "Frag Grenade", "Spear .308", "M870", "P-10C", "L85A2", "Mk 14 EBR", "GONNE-6", "Pof-9", "M45 MEUSOC", "Smoke Grenade", "PMM", "Proximity Alarm", "CAMRS", "AUG A2", "FO-12", "Para-308", "P229", "LFP586", "M590A1", "Ballistic Shield", "552 Commando", "ITA12S", "KERATOS .357", "PDW9", "G8A1", "UZK50GI", "C75 Auto", "ITA12L", "MP5K", "C8-SFW", "C7E", "FMG-9", "RG15", "M762", "M12", "CSRX 300", "MP5SD", "F90", "AK-12", "SPAS-15", "PRB92", "SC3000K", "Q-929", "TCSG12", "V308", "Impact Grenade", "416-C Carbine", "ARX200", "P12", "LMG-E", "SMG-12", "SIX12", "Mk1 9mm", "Barbed Wire", "F2", "P9", "GSH-18", "ACS12", "SASG-12", "Hard Breach Charge", "P90", "Le Roc", "5.7 USG", "Mp5k"
+    };
+
+    private List<string> usernames = new List<string>();
+    private List<InitializationService.KD> filteredData = new();
+    private string selectedUsername = string.Empty;
+    private string selectedOperator = string.Empty;
+    private string selectedMap = string.Empty;
+    private string selectedWeapon = string.Empty;
+
+    private int totalKills = 0;
+    private int totalDeaths = 0;
+    private double highestKD = 0;
+    private double lowestKD = double.MaxValue;
+    private string bestRole = string.Empty;
+    private string bestWeapon = string.Empty;
+    private string bestMap = string.Empty;
+    private string bestOperator = string.Empty;
+    private string bestUser = string.Empty;
+
+    private string Title
+    {
+        get => (
+            (string.IsNullOrWhiteSpace(selectedUsername) ? "" : "for User: " + selectedUsername + ", ") +
+            (string.IsNullOrWhiteSpace(selectedOperator) ? "" : "with Operator: " + selectedOperator + ", ") +
+            (string.IsNullOrWhiteSpace(selectedMap) ? "" : "on Map: " + selectedMap + ", ") +
+            (string.IsNullOrWhiteSpace(selectedWeapon) ? "" : "using Weapon: " + selectedWeapon)
+        );
+    }
+
+    private Dictionary<int, bool> collapsibleStates = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var data = InitService.Userdata;
+        usernames = data.Keys.ToList();
+        await FilterData();
+    }
+
+    private async Task HandleUsernameChange(ChangeEventArgs e)
+    {
+        selectedUsername = e.Value.ToString();
+        await FilterData();
+    }
+
+    private async Task HandleOperatorChange(ChangeEventArgs e)
+    {
+        selectedOperator = e.Value.ToString();
+        await FilterData();
+    }
+
+    private async Task HandleMapChange(ChangeEventArgs e)
+    {
+        selectedMap = e.Value.ToString();
+        await FilterData();
+    }
+
+    private async Task HandleWeaponChange(ChangeEventArgs e)
+    {
+        selectedWeapon = e.Value.ToString();
+        await FilterData();
+    }
+
+    private async Task FilterData()
+    {
+        var allData = InitService.Userdata.Values.SelectMany(user => user.Kds);
+        filteredData = allData.Where(kd =>
+            (string.IsNullOrEmpty(selectedUsername) || InitService.Userdata[selectedUsername].Kds.Contains(kd)) &&
+            (string.IsNullOrEmpty(selectedOperator) || kd.Op == selectedOperator) &&
+            (string.IsNullOrEmpty(selectedMap) || kd.Map == selectedMap) &&
+            (string.IsNullOrEmpty(selectedWeapon) || kd.Kills.Any(k => k.Weapon == selectedWeapon))
+        ).ToList();
+
+        CalculateStats();
+        StateHasChanged();
+    }
+
+    private void CalculateStats()
+    {
+        totalKills = filteredData.Sum(kd => kd.Kills.Count);
+        totalDeaths = filteredData.Sum(kd => kd.Deaths);
+
+        highestKD = filteredData.Any() ? filteredData.Max(kd => kd.Deaths > 0 ? (double)kd.Kills.Count / kd.Deaths : kd.Kills.Count) : 0;
+        lowestKD = filteredData.Any() ? filteredData.Min(kd => kd.Deaths > 0 ? (double)kd.Kills.Count / kd.Deaths : kd.Kills.Count) : 0;
+
+        if (!string.IsNullOrEmpty(selectedMap))
+        {
+            var bestKD = filteredData.OrderByDescending(kd => kd.Deaths > 0 ? (double)kd.Kills.Count / kd.Deaths : kd.Kills.Count).FirstOrDefault();
+            bestRole = bestKD != null && bestKD.Kills[0].Attacking ? "attacker" : "defender";
+        }
+
+        if (!string.IsNullOrEmpty(selectedOperator))
+        {
+            var operatorData = filteredData.Where(kd => kd.Op == selectedOperator);
+            bestWeapon = operatorData.Any() ? operatorData
+                .SelectMany(kd => kd.Kills)
+                .GroupBy(k => k.Weapon)
+                .OrderByDescending(g => g.Count() / (double)operatorData.Where(kd => kd.Kills.Any(ki => ki.Weapon == g.Key)).Sum(kd => kd.Deaths))
+                .First().Key : string.Empty;
+        }
+
+        if (!string.IsNullOrEmpty(selectedUsername))
+        {
+            var userData = InitService.Userdata[selectedUsername].Kds;
+            bestMap = userData.Any() ? userData
+                .OrderByDescending(kd => kd.Deaths > 0 ? (double)kd.Kills.Count / kd.Deaths : kd.Kills.Count)
+                .First().Map : string.Empty;
+
+            bestOperator = userData.Any() ? userData
+                .OrderByDescending(kd => kd.Deaths > 0 ? (double)kd.Kills.Count / kd.Deaths : kd.Kills.Count)
+                .First().Op : string.Empty;
+
+            bestWeapon = userData.Any() ? userData
+                .SelectMany(kd => kd.Kills)
+                .GroupBy(k => k.Weapon)
+                .OrderByDescending(g => g.Count() / (double)userData.Where(kd => kd.Kills.Any(ki => ki.Weapon == g.Key)).Sum(kd => kd.Deaths))
+                .First().Key : string.Empty;
+        }
+
+        if (!string.IsNullOrEmpty(selectedOperator) && string.IsNullOrEmpty(selectedUsername))
+        {
+            bestUser = filteredData.Any() ? InitService.Userdata
+                .Where(u => u.Value.Kds.Any(kd => kd.Op == selectedOperator))
+                .OrderByDescending(u => u.Value.Kds.Where(kd => kd.Op == selectedOperator)
+                .Max(kd => kd.Deaths > 0 ? (double)kd.Kills.Count / kd.Deaths : kd.Kills.Count))
+                .First().Key : string.Empty;
+        }
+    }
+
+    private void ToggleContent(int key)
+    {
+        if (collapsibleStates.ContainsKey(key))
+        {
+            collapsibleStates[key] = !collapsibleStates[key];
+        }
+        else
+        {
+            collapsibleStates[key] = true;
+        }
+    }
+
+    private string GetContentStyle(int key)
+    {
+        return collapsibleStates.ContainsKey(key) && collapsibleStates[key] ? "display: block;" : "display: none;";
+    }
+}
+
