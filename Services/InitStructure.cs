@@ -3,6 +3,8 @@
     public partial class InitializationService
     {
 
+        public Dictionary<string, User> Userdata = new();
+
         public class User
         {
             public string Password { get; set; }
@@ -34,5 +36,4 @@
             public List<string> Maps { get; set; }
         }
     }
-}
 }
