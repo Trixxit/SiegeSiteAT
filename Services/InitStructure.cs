@@ -3,7 +3,7 @@
     public partial class InitializationService
     {
 
-        public Dictionary<string, User> Userdata = new();
+        //public Dictionary<string, User> Userdata = new();
 
         public class User
         {

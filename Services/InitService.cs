@@ -31,6 +31,7 @@ namespace FPSHome.Services
         {
 #if !SkipLoading
             await _jsRuntime.InvokeVoidAsync("logMessage", "Initing");
+            await Task.Delay(1000);
             if (!IsInitialized)
             {
                 await _jsRuntime.InvokeVoidAsync("logMessage", "First Load~");
@@ -60,6 +61,8 @@ namespace FPSHome.Services
 
         private async Task GenerateRandomPeople()
         {
+            await _jsRuntime.InvokeVoidAsync("logMessage", $"Gwah");
+            await Task.Delay(5000);
             await GenerateUserData(30);
         }
 
@@ -101,6 +104,5 @@ namespace FPSHome.Services
 
             return userData.Count;
         }
-
     }
 }

@@ -3,7 +3,6 @@ using Microsoft.JSInterop;
 using System;
 using System.Text.Json;
 using static FPSHome.Services.InitializationService;
-using static System.Net.WebRequestMethods;
 
 namespace FPSHome.Services
 {
@@ -28,8 +27,11 @@ namespace FPSHome.Services
 
         public async Task GenerateUserData(int numUsers)
         {
+            await _jsRuntime.InvokeVoidAsync("logMessage", "Generating user data...");
             var json = await _httpClient.GetStringAsync("/JSON/rsix.json");
+            await _jsRuntime.InvokeVoidAsync("logMessage", "Downloaded rsix json");
             OperatorsData = JsonSerializer.Deserialize<Dictionary<string, Operator>>(json);
+            await _jsRuntime.InvokeVoidAsync("logMessage", "Deserialized Operators");
             var faker = new Faker();
 
             // Calculate total number of KDs to be generated
@@ -37,15 +39,18 @@ namespace FPSHome.Services
             var userKDs = new Dictionary<string, int>();
             for (int i = 0; i < numUsers; i++)
             {
-                var hoursPlayed = faker.Random.Int(20, 500);
-                var numKds = (int)(hoursPlayed * (faker.Random.Int(1, 3) + (faker.Random.Double() * 10 / 10)));
+                var hoursPlayed = faker.Random.Int(10, 50);
+                var numKds = (int)(hoursPlayed * (faker.Random.Int(1, 2) + (faker.Random.Double())));
+                await _jsRuntime.InvokeVoidAsync("logMessage", $"Generated KD #{i + 1} with {numKds} kills");
                 totalKDs += numKds;
                 userKDs.Add(faker.Internet.UserName(), numKds);
             }
 
             var kdsGenerated = 0;
+            int ij = 0;
             foreach (var kvp in userKDs)
             {
+                await _jsRuntime.InvokeVoidAsync("logMessage", $"Generating user {ij++}");
                 var username = kvp.Key;
                 var numKds = kvp.Value;
 
@@ -56,7 +61,7 @@ namespace FPSHome.Services
                     TotalDeaths = 0,
                     Kds = new List<KD>(),
                     Favourites = GenerateFavourites(),
-                    HoursPlayed = faker.Random.Int(20, 500)
+                    HoursPlayed = faker.Random.Int(10, 100)
                 };
 
                 for (int j = 0; j < numKds; j++)
