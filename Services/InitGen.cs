@@ -16,6 +16,9 @@ namespace FPSHome.Services
 
         private static Dictionary<string, Operator> OperatorsData;
 
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        public bool IsTaskRunning { get; private set; } = false;
+
         private class Operator
         {
             public bool attacker { get; set; }
@@ -34,8 +37,7 @@ namespace FPSHome.Services
             await _jsRuntime.InvokeVoidAsync("logMessage", "Deserialized Operators");
             var faker = new Faker();
 
-            // Calculate total number of KDs to be generated
-            var totalKDs = 0;
+            int totalKDs = 0;
             var userKDs = new Dictionary<string, int>();
             for (int i = 0; i < numUsers; i++)
             {
@@ -44,6 +46,8 @@ namespace FPSHome.Services
                 await _jsRuntime.InvokeVoidAsync("logMessage", $"Generated KD #{i + 1} with {numKds} kills");
                 totalKDs += numKds;
                 userKDs.Add(faker.Internet.UserName(), numKds);
+                if (_cancellationTokenSource.IsCancellationRequested)
+                    return;
             }
 
             var kdsGenerated = 0;
@@ -53,6 +57,9 @@ namespace FPSHome.Services
                 await _jsRuntime.InvokeVoidAsync("logMessage", $"Generating user {ij++}");
                 var username = kvp.Key;
                 var numKds = kvp.Value;
+
+                if (_cancellationTokenSource.IsCancellationRequested)
+                    return;
 
                 var user = new User
                 {
@@ -71,7 +78,10 @@ namespace FPSHome.Services
                     user.TotalKills += kd.Kills.Count;
                     user.TotalDeaths += kd.Deaths;
                     kdsGenerated++;
-                    OnProgressChanged?.Invoke((int)(((double)kdsGenerated / totalKDs) * 100));
+                    int progress = (int)(((double)kdsGenerated / totalKDs) * 100);
+                    await _jsRuntime.InvokeVoidAsync("logMessage", $"Progress: {progress}");
+                    OnProgressChanged?.Invoke(progress);
+                    await Task.Yield();
                 }
 
                 Userdata.TryAdd(username, user);

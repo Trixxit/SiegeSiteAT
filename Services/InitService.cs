@@ -42,6 +42,7 @@ namespace FPSHome.Services
                 {
                     await _jsRuntime.InvokeVoidAsync("logMessage", "Initting owo");
                     await LoadStoreUserData();
+                    await Task.Delay(1000);
                     await GenerateRandomPeople();
                     await _jsRuntime.InvokeVoidAsync("logMessage", "Finished!");
                 }
@@ -61,9 +62,13 @@ namespace FPSHome.Services
 
         private async Task GenerateRandomPeople()
         {
-            await _jsRuntime.InvokeVoidAsync("logMessage", $"Gwah");
-            await Task.Delay(5000);
-            await GenerateUserData(30);
+            _jsRuntime.InvokeVoidAsync("logMessage", $"Gwah");
+            await GenerateUserData(10);
+        }
+
+        public void CancelTask()
+        {
+            _cancellationTokenSource.Cancel();
         }
 
         private async Task LoadStoreUserData()
@@ -72,7 +77,7 @@ namespace FPSHome.Services
         private async Task<Dictionary<string, User>> FetchAndDeserializeFile(string fileName)
         {
             await _jsRuntime.InvokeVoidAsync("logMessage", $"Loading {fileName}...");
-            var jsonData = await _jsRuntime.InvokeAsync<string>("fetchData", fileName);
+            var jsonData = await _httpClient.GetStringAsync(fileName);
             await _jsRuntime.InvokeVoidAsync("logMessage", $"Finished fetch for {fileName}.");
             var userData = JsonSerializer.Deserialize<Dictionary<string, User>>(jsonData);
             await _jsRuntime.InvokeVoidAsync("logMessage", "Deserialized...");

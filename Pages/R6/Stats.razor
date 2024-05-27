@@ -110,43 +110,47 @@
             }
         </div>
     </div>
-    <div class="stats-container">
-        <h2 class="stats-header">Filtered Stats</h2>
-        <div class="stats-content">
-            @foreach (var kd in filteredData)
-            {
-                var username = InitService.Userdata.FirstOrDefault(u => u.Value.Kds.Contains(kd)).Key;
-                var kills = new Dictionary<string, int>();
-                int tk = 0;
-
-                foreach (var kill in kd.Kills)
-                {
-                    if (!kills.TryAdd(kill.Weapon, 1))
-                        kills[kill.Weapon] = kills[kill.Weapon] + 1;
-                    tk++;
-                }
-
-                <div class="stat-item">
-                    @if (string.IsNullOrEmpty(selectedUsername))
+    <div class="collapsible-container">
+        <button class="collapsible-button" @onclick="() => ToggleContent('o'.GetHashCode())">Stats</button>
+        <div class="collapsible-content" style="@GetContentStyle('o'.GetHashCode())">
+            <div class="stats-container">
+                <div class="stats-content">
+                    @foreach (var kd in filteredData)
                     {
-                        <p>Username: @username</p>
-                    }
-                    <p>Operator: @kd.Op</p>
-                    <p>Deaths: @kd.Deaths</p>
-                    <p>Map: @kd.Map</p>
-                    <p>Hours Played at Submission: @kd.HoursPlayedAtSubmission</p>
-                    <p>Total Kills: @tk</p>
-                    <div class="collapsible-container">
-                        <button class="collapsible-button" @onclick="() => ToggleContent(kd.GetHashCode())">Kills</button>
-                        <div class="collapsible-content" style="@GetContentStyle(kd.GetHashCode())">
-                            @foreach (var item in kills)
+                        var username = InitService.Userdata.FirstOrDefault(u => u.Value.Kds.Contains(kd)).Key;
+                        var kills = new Dictionary<string, int>();
+                        int tk = 0;
+
+                        foreach (var kill in kd.Kills)
+                        {
+                            if (!kills.TryAdd(kill.Weapon, 1))
+                                kills[kill.Weapon] = kills[kill.Weapon] + 1;
+                            tk++;
+                        }
+
+                        <div class="stat-item">
+                            @if (string.IsNullOrEmpty(selectedUsername))
                             {
-                                <p>@item.Key: @item.Value</p>
+                                <p>Username: @username</p>
                             }
+                            <p>Operator: @kd.Op</p>
+                            <p>Deaths: @kd.Deaths</p>
+                            <p>Map: @kd.Map</p>
+                            <p>Hours Played at Submission: @kd.HoursPlayedAtSubmission</p>
+                            <p>Total Kills: @tk</p>
+                            <div class="collapsible-container">
+                                <button class="collapsible-button" @onclick="() => ToggleContent(kd.GetHashCode())">Kills</button>
+                                <div class="collapsible-content" style="@GetContentStyle(kd.GetHashCode())">
+                                    @foreach (var item in kills)
+                                    {
+                                        <p>@item.Key: @item.Value</p>
+                                    }
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    }
                 </div>
-            }
+            </div>
         </div>
     </div>
 }
