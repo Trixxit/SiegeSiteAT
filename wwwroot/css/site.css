@@ -716,10 +716,30 @@ article {
     border-radius: 5px;
 }
 
+    .collapsible-button.center-align {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+
     .collapsible-button:hover {
         background-color: #444;
         color: #ffd700;
     }
+
+    .collapsible-button h2 {
+        background-color: rgba(52, 58, 64, 0.9);
+        color: white;
+        border: none;
+        text-align: center;
+    }
+
+        .collapsible-button h2:hover {
+            background-color: #444;
+            color: #ffd700;
+        }
 
 .collapsible-content {
     padding: 0 1rem;

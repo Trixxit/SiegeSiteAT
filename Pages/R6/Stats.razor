@@ -111,7 +111,9 @@
         </div>
     </div>
     <div class="collapsible-container">
-        <button class="collapsible-button" @onclick="() => ToggleContent('o'.GetHashCode())">Stats</button>
+        <button class="collapsible-button center-align" @onclick="() => ToggleContent('o'.GetHashCode())">
+            <h2>Filtered Stats</h2>
+        </button>
         <div class="collapsible-content" style="@GetContentStyle('o'.GetHashCode())">
             <div class="stats-container">
                 <div class="stats-content">
