@@ -21,6 +21,14 @@
     animation: shimmer 6s linear infinite; 
 }
 
+.content-container {
+    width: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
 @keyframes shimmer {
     0% {
         background-position: 100% 50%;
@@ -700,7 +708,14 @@ article {
     border-radius: 5px;
     margin: 1rem 0;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 90%;
 }
+
+    .collapsible-container.center-align {
+        width: 90% !important;
+        margin: 0 auto !important;
+        /*text-align: center !important;*/
+    }
 
 .collapsible-button {
     background-color: rgba(52, 58, 64, 0.9);
@@ -715,14 +730,6 @@ article {
     transition: background-color 0.3s;
     border-radius: 5px;
 }
-
-    .collapsible-button.center-align {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-    }
-
 
     .collapsible-button:hover {
         background-color: #444;
@@ -740,6 +747,15 @@ article {
             background-color: #444;
             color: #ffd700;
         }
+
+
+    .collapsible-button.center-align {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
 
 .collapsible-content {
     padding: 0 1rem;

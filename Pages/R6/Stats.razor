@@ -62,15 +62,15 @@
             </div>
             <div class="stat-item">
                 <h3>Average KD</h3>
-                <p>@(totalDeaths > 0 ? (double)totalKills / totalDeaths : 0):0.00</p>
+                <p>@Math.Round((totalDeaths > 0 ? (double)totalKills / totalDeaths : 0), 2)</p>
             </div>
             <div class="stat-item">
                 <h3>Highest KD</h3>
-                <p>@highestKD:0.00</p>
+                <p>@(Math.Round(highestKD, 2))</p>
             </div>
             <div class="stat-item">
                 <h3>Lowest KD</h3>
-                <p>@lowestKD:0.00</p>
+                <p>@(Math.Round(highestKD, 2))</p>
             </div>
             @if (!string.IsNullOrWhiteSpace(selectedMap))
             {
@@ -100,6 +100,10 @@
                     <h3>Best Weapon</h3>
                     <p>@bestWeapon</p>
                 </div>
+                <div class="stat-item">
+                    <h3>Hours Played</h3>
+                    <p>@hours</p>
+                </div>
             }
             @if (!string.IsNullOrWhiteSpace(selectedOperator) && string.IsNullOrWhiteSpace(selectedUsername))
             {
@@ -110,7 +114,7 @@
             }
         </div>
     </div>
-    <div class="collapsible-container">
+    <div class="collapsible-container center-align" id="womp womp">
         <button class="collapsible-button center-align" @onclick="() => ToggleContent('o'.GetHashCode())">
             <h2>Filtered Stats</h2>
         </button>
@@ -196,6 +200,7 @@
     private string bestMap = string.Empty;
     private string bestOperator = string.Empty;
     private string bestUser = string.Empty;
+    private double hours = 0.0;
 
     private string Title
     {
@@ -295,6 +300,8 @@
                 .GroupBy(k => k.Weapon)
                 .OrderByDescending(g => g.Count() / (double)userData.Where(kd => kd.Kills.Any(ki => ki.Weapon == g.Key)).Sum(kd => kd.Deaths))
                 .First().Key : string.Empty;
+
+            hours = InitService.Userdata[selectedUsername].HoursPlayed;
         }
 
         if (!string.IsNullOrEmpty(selectedOperator) && string.IsNullOrEmpty(selectedUsername))

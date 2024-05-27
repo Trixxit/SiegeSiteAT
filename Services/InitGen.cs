@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using Bogus.DataSets;
 using Microsoft.JSInterop;
 using System;
 using System.Text.Json;
@@ -61,6 +62,8 @@ namespace FPSHome.Services
                 if (_cancellationTokenSource.IsCancellationRequested)
                     return;
 
+                List<int> nums;
+
                 var user = new User
                 {
                     Password = faker.Internet.Password(),
@@ -70,10 +73,10 @@ namespace FPSHome.Services
                     Favourites = GenerateFavourites(),
                     HoursPlayed = faker.Random.Int(10, 100)
                 };
-
+                nums = GenerateRange(faker, 0, user.HoursPlayed, numKds);
                 for (int j = 0; j < numKds; j++)
                 {
-                    var kd = GenerateKD();
+                    var kd = GenerateKD(nums[j], user.HoursPlayed);
                     user.Kds.Add(kd);
                     user.TotalKills += kd.Kills.Count;
                     user.TotalDeaths += kd.Deaths;
@@ -91,13 +94,35 @@ namespace FPSHome.Services
             return;
         }
 
-        private static KD GenerateKD()
+        private static List<int> GenerateRange(Faker faker, double min, double max, int amount)
+        {
+            if (amount < 2)
+            {
+                throw new ArgumentException("Amount must be at least 2 to generate a range.");
+            }
+
+            List<int> values = new List<int>();
+            values.Add((int)min);
+            values.Add((int)max);
+            for (int i = 2; i < amount; i++)
+            {
+                double fraction = (double)i / (amount - 1);
+                double spread = fraction + (faker.Random.Double() - 0.5) * 0.2;
+                double value = min + (max - min) * spread;
+                value = Math.Clamp(value, min, max);
+                values.Add((int)value);
+            }
+            values.Sort();
+            return values;
+        }
+
+        private static KD GenerateKD(double hoursplayed, double maxHours)
         {
             var faker = new Faker();
             var operatorName = faker.PickRandom<string>(OperatorsData.Keys);
             var mapName = faker.PickRandom(Maps);
-            var killsCount = faker.Random.Int(0, 10);
-            var deaths = faker.Random.Int(0, 8);
+            var killsCount = Math.Round(Generate(faker, 0, 15, Normalize(hoursplayed, maxInput: maxHours)));
+            int deaths = 8 - (int)Math.Round(Generate(faker, 0, 8, Normalize(hoursplayed, maxInput: maxHours, maxOutput:8)));
 
             var killsList = new List<Kill>();
             for (int i = 0; i < killsCount; i++)
@@ -113,8 +138,20 @@ namespace FPSHome.Services
                 Deaths = deaths,
                 Kills = killsList,
                 Map = mapName,
-                HoursPlayedAtSubmission = Math.Round(faker.Random.Double(0.5, 5), 1)
+                HoursPlayedAtSubmission = hoursplayed
             };
+        }
+
+        public static double Generate(Faker faker, double min, double max, double weight)
+        {
+            double randomValue = faker.Random.Double(0, 1);
+            double weightedValue = 1 - Math.Pow(1 - randomValue, weight);
+            return min + (max - min) * weightedValue;
+        }
+
+        public static double Normalize(double value, double minInput = 1, double maxInput = 50, double minOutput = 1, double maxOutput = 15)
+        {
+            return (value - minInput) / (maxInput - minInput) * (maxOutput - minOutput) + minOutput;
         }
 
         private static Favourites GenerateFavourites()
