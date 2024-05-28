@@ -5,6 +5,9 @@
 @using Microsoft.AspNetCore.Components.Web
 @using System.Linq
 @using System.Collections.Generic
+@using System.Text.Json
+@using System.Text.Json.Serialization
+
 
 @inject IJSRuntime JS
 @inject HttpClient Http
@@ -12,6 +15,61 @@
 
 <PageTitle>Siege Stats</PageTitle>
 <FPSHome.wwwroot.Shared.Menubar />
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+</head>
+
+<script>
+    function loadChartJs(callback) {
+        if (typeof Chart !== 'undefined') {
+            callback();
+            console.log("chart is defined");
+        } else {
+            console.log("chart is undefined");
+            var script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+            script.onload = function() {
+                console.log("chart loaded");
+                callback();
+            };
+            document.head.appendChild(script);
+        }
+    }
+
+    function generateChart(canvasId, chartData) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    function generateCharts(chartConfigsJson) {
+        var chartConfigs = JSON.parse(chartConfigsJson);
+        loadChartJs(function () {
+            chartConfigs.forEach(config => {
+                generateChart(config.id, config.data);
+            });
+        });
+    }
+
+
+    window.addEventListener('DOMContentLoaded', (event) => {
+        loadChartJs(function() {
+            console.log('Charts are ready to be generated');
+        });
+    });
+</script>
 
 <div class="filter-container">
     <select @onchange="HandleUsernameChange" class="filter-dropdown">
@@ -70,7 +128,14 @@
             </div>
             <div class="stat-item">
                 <h3>Lowest KD</h3>
-                <p>@(Math.Round(highestKD, 2))</p>
+                @if (lowestKD < 0)
+                {
+                    <p>0:@(Math.Abs(lowestKD))</p>
+                }
+                else
+                {
+                    <p>@Math.Round(lowestKD, 2)</p>
+                }
             </div>
             @if (!string.IsNullOrWhiteSpace(selectedMap))
             {
@@ -155,6 +220,35 @@
                             </div>
                         </div>
                     }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New collapsible container for graphs -->
+    <div class="collapsible-container center-align">
+        <button class="collapsible-button center-align" @onclick='() => ToggleContent("graphs".GetHashCode())'>
+            <h2>Graphical Stats</h2>
+        </button>
+        <div class="collapsible-content" style='@GetContentStyle("graphs".GetHashCode())'>
+            <div class="stats-container">
+                <div class="stats-content">
+                    <div class="stat-item">
+                        <h3>Kills Over Time</h3>
+                        <canvas id="killsOverTimeChart"></canvas>
+                    </div>
+                    <div class="stat-item">
+                        <h3>Deaths Over Time</h3>
+                        <canvas id="deathsOverTimeChart"></canvas>
+                    </div>
+                    <div class="stat-item">
+                        <h3>Average KD Over Time</h3>
+                        <canvas id="avgKDOverTimeChart"></canvas>
+                    </div>
+                    <div class="stat-item">
+                        <h3>Top Weapons Usage</h3>
+                        <canvas id="topWeaponsChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -257,6 +351,7 @@
         ).ToList();
 
         CalculateStats();
+        await GenerateCharts();
         StateHasChanged();
     }
 
@@ -266,7 +361,11 @@
         totalDeaths = filteredData.Sum(kd => kd.Deaths);
 
         highestKD = filteredData.Any() ? filteredData.Max(kd => kd.Deaths > 0 ? (double)kd.Kills.Count / kd.Deaths : kd.Kills.Count) : 0;
-        lowestKD = filteredData.Any() ? filteredData.Min(kd => kd.Deaths > 0 ? (double)kd.Kills.Count / kd.Deaths : kd.Kills.Count) : 0;
+        lowestKD = filteredData.Any() ? filteredData.Min(kd => kd.Deaths > 0 ?
+            kd.Kills.Count > 0 ?
+                (double)kd.Kills.Count / kd.Deaths :
+                -kd.Deaths
+            : kd.Kills.Count) : 0;
 
         if (!string.IsNullOrEmpty(selectedMap))
         {
@@ -330,5 +429,106 @@
     {
         return collapsibleStates.ContainsKey(key) && collapsibleStates[key] ? "display: block;" : "display: none;";
     }
-}
 
+    private async Task GenerateCharts()
+    {
+        await Task.Delay(1000); // Ensure sufficient delay
+
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
+        };
+
+        var chartConfigs = new[]
+        {
+            new { id = "killsOverTimeChart", data = GetKillsOverTimeData() },
+            new { id = "deathsOverTimeChart", data = GetDeathsOverTimeData() },
+            new { id = "avgKDOverTimeChart", data = GetAvgKDOverTimeData() },
+            new { id = "topWeaponsChart", data = GetTopWeaponsData() }
+        };
+
+        await JS.InvokeVoidAsync("generateCharts", JsonSerializer.Serialize(chartConfigs, options));
+    }
+
+
+
+
+
+    private object GetKillsOverTimeData()
+    {
+        return new
+        {
+            labels = filteredData.Select(kd => kd.HoursPlayedAtSubmission).Distinct().ToArray(),
+            datasets = new[]
+            {
+                new
+                {
+                    label = "Kills Over Time",
+                    data = filteredData.GroupBy(kd => kd.HoursPlayedAtSubmission).Select(g => g.Sum(kd => kd.Kills.Count)).ToArray(),
+                    backgroundColor = "rgba(75, 192, 192, 0.2)",
+                    borderColor = "rgba(75, 192, 192, 1)",
+                    borderWidth = 1
+                }
+            }
+        };
+    }
+
+    private object GetDeathsOverTimeData()
+    {
+        return new
+        {
+            labels = filteredData.Select(kd => kd.HoursPlayedAtSubmission).Distinct().ToArray(),
+            datasets = new[]
+            {
+                new
+                {
+                    label = "Deaths Over Time",
+                    data = filteredData.GroupBy(kd => kd.HoursPlayedAtSubmission).Select(g => g.Sum(kd => kd.Deaths)).ToArray(),
+                    backgroundColor = "rgba(255, 99, 132, 0.2)",
+                    borderColor = "rgba(255, 99, 132, 1)",
+                    borderWidth = 1
+                }
+            }
+        };
+    }
+
+    private object GetAvgKDOverTimeData()
+    {
+        return new
+        {
+            labels = filteredData.Select(kd => kd.HoursPlayedAtSubmission).Distinct().ToArray(),
+            datasets = new[]
+            {
+                new
+                {
+                    label = "Average KD Over Time",
+                    data = filteredData.GroupBy(kd => kd.HoursPlayedAtSubmission).Select(g => g.Sum(kd => kd.Kills.Count) / (double)g.Sum(kd => kd.Deaths)).ToArray(),
+                    backgroundColor = "rgba(54, 162, 235, 0.2)",
+                    borderColor = "rgba(54, 162, 235, 1)",
+                    borderWidth = 1
+                }
+            }
+        };
+    }
+
+    private object GetTopWeaponsData()
+    {
+        var weaponGroups = filteredData.SelectMany(kd => kd.Kills).GroupBy(k => k.Weapon);
+        return new
+        {
+            labels = weaponGroups.Select(g => g.Key).ToArray(),
+            datasets = new[]
+            {
+                new
+                {
+                    label = "Top Weapons Usage",
+                    data = weaponGroups.Select(g => g.Count()).ToArray(),
+                    backgroundColor = "rgba(153, 102, 255, 0.2)",
+                    borderColor = "rgba(153, 102, 255, 1)",
+                    borderWidth = 1
+                }
+            }
+        };
+    }
+}

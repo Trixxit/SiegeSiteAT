@@ -20,7 +20,6 @@ window.fetchData = async function (url) {
 
 
 
-
 window.fetchWithCorsAnywhere = async function (url) {
     const corsProxy = "https://cors-anywhere.herokuapp.com/";
     const fullUrl = corsProxy + url;
