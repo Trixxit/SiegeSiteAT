@@ -1,0 +1,232 @@
+﻿@page "/profile"
+@inject NavigationManager Navigation
+@using FPSHome
+@using FPSHome.Services
+@inject InitializationService InitializationService
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using User = FPSHome.Services.InitializationService.User
+@using KD = FPSHome.Services.InitializationService.KD
+
+<PageTitle>Profile</PageTitle>
+
+<FPSHome.wwwroot.Shared.Menubar />
+
+@if (InitializationService.currentuser != (null, null))
+{
+    <header class="title-section" style="background-image: url('/images/nicelooking.gif');">
+        <h1 class="title">Profile</h1>
+    </header>
+
+    <div class="page-container">
+        <div class="content-container">
+            <section class="profile-section">
+                <div class="profile-bubble">
+                    <div class="profile-form">
+                        @if (InitializationService.a)
+                        {
+                            <div class="form-group">
+                                <label for="userSelection">Select User</label>
+                                <select id="userSelection" class="form-control" @bind="selectedUsername" @bind:after="OnUserSelected">
+                                    @foreach (var user in InitializationService.Userdata.Keys)
+                                    {
+                                        <option value="@user">@user</option>
+                                    }
+                                </select>
+                            </div>
+                        }
+
+                        <h2>@selectedUsername's Profile</h2>
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <InputText id="username" class="form-control" @bind-Value="username" />
+                            <button class="btn-edit" @onclick="SaveUsername">Save</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <InputText id="password" type="password" class="form-control" @bind-Value="currentUser.Password" />
+                            <button class="btn-edit" @onclick="SaveChanges">Save</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="totalKills">Total Kills</label>
+                            <input id="totalKills" class="form-control" value="@currentUser.TotalKills" disabled />
+                        </div>
+                        <div class="form-group">
+                            <label for="totalDeaths">Total Deaths</label>
+                            <input id="totalDeaths" class="form-control" value="@currentUser.TotalDeaths" disabled />
+                        </div>
+                        <div class="form-group">
+                            <label for="hoursPlayed">Hours Played</label>
+                            <InputNumber id="hoursPlayed" class="form-control" @bind-Value="currentUser.HoursPlayed" />
+                            <button class="btn-edit" @onclick="SaveChanges">Save</button>
+                        </div>
+                        <br />
+                        <div class="form-group">
+                            <h3>Favourites</h3>
+                            <div>
+                                <label for="favOperators">Operators</label>
+                                <select id="favOperators" class="form-control" @bind="FavOperator">
+                                    @foreach (var @operator in availableOperators)
+                                    {
+                                        <option value="@(@operator)">@(@operator)</option>
+                                    }
+                                </select>
+                                <button class="btn-edit" @onclick="UpdateFavOperators">Save</button>
+                            </div>
+                            <div>
+                                <label for="favMaps">Maps</label>
+                                <select id="favMaps" class="form-control" @bind="FavMap">
+                                    @foreach (var map in availableMaps)
+                                    {
+                                        <option value="@map">@map</option>
+                                    }
+                                </select>
+                                <button class="btn-edit" @onclick="UpdateFavMaps">Save</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="kds">K/D Ratios</label>
+                            @{ var counter = 0; }
+                            @foreach (var kd in MergeKDsByOperator(currentUser.Kds))
+                            {
+                                <details>
+                                    <summary>@($"{++counter}. {kd.Op}")</summary>
+                                    <ul>
+                                        <li>Total Kills: @kd.Kills.Count()</li>
+                                        <li>Total Deaths: @kd.Deaths</li>
+                                        <li>Total Hours Played: @kd.HoursPlayedAtSubmission</li>
+                                        <li>Map: @kd.Map</li>
+                                    </ul>
+                                </details>
+                            }
+                        </div>
+
+                        <div class="form-group">
+                            <button class="btn-edit" @onclick="NavigateToEditKDs">Edit KDs</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 FPS Stats Tracker. All rights reserved.</p>
+    </footer>
+
+    <button class="help-button">?</button>
+}
+
+@code {
+    private User currentUser;
+    private string username;
+    private string selectedUsername;
+    private List<string> availableMaps;
+    private List<string> availableOperators;
+
+    protected override void OnInitialized()
+    {
+        if ((InitializationService.currentuser == (null, null) ||
+            InitializationService.currentuser.Item1 == null ||
+            InitializationService.currentuser.Item2 == null) && !InitializationService.a)
+        {
+            Navigation.NavigateTo("/home");
+        }
+        else
+        {
+            availableMaps = InitializationService.Maps ?? new List<string>();
+            availableOperators = new List<string> {
+                "Sledge", "Thatcher", "Smoke", "Mute", "Ash", "Thermite", "Castle", "Pulse", "Twitch",
+                "Montagne", "Doc", "Rook", "Glaz", "Fuze", "Kapkan", "Tachanka", "Blitz", "IQ", "Jäger",
+                "Bandit", "Buck", "Frost", "Blackbeard", "Valkyrie", "Capitão", "Caveira", "Hibana",
+                "Echo", "Jackal", "Mira", "Ying", "Lesion", "Zofia", "Ela", "Dokkaebi", "Vigil", "Lion",
+                "Finka", "Maestro", "Alibi", "Maverick", "Clash", "Nomad", "Kaid", "Gridlock", "Mozzie",
+                "Nøkk", "Warden", "Amaru", "Goyo", "Kali", "Wamai", "Iana", "Oryx", "Ace", "Melusi", "Zero",
+                "Aruni", "Flores", "Thunderbird", "Osa", "Thorn", "Sens", "Solis", "Brava", "Deimos", "Fenrir"
+            };
+
+            if (InitializationService.a && InitializationService.Userdata.Count > 0)
+            {
+                selectedUsername = InitializationService.Userdata.Keys.First();
+            }
+            else
+            {
+                selectedUsername = InitializationService.currentuser.Item1;
+            }
+
+            LoadUser(selectedUsername);
+        }
+    }
+
+    private void LoadUser(string username)
+    {
+        this.username = username;
+        currentUser = InitializationService.Userdata[username];
+        InitializationService.currentuser = (username, currentUser);
+    }
+
+    private void SaveUsername()
+    {
+        var oldUsername = selectedUsername;
+        var newUsername = username;
+        bool exists = InitializationService.Userdata.Keys.Any(key => string.Equals(key, newUsername, StringComparison.InvariantCultureIgnoreCase));
+        if (!string.IsNullOrEmpty(newUsername) && !exists)
+        {
+            var user = InitializationService.Userdata[oldUsername];
+            InitializationService.Userdata.Remove(oldUsername);
+            InitializationService.Userdata[newUsername] = user;
+            InitializationService.currentuser = (newUsername, user);
+            selectedUsername = newUsername;
+        }
+    }
+
+    private string FavOperator
+    {
+        get => currentUser.Favourites.Operators.FirstOrDefault();
+        set => currentUser.Favourites.Operators = new List<string> { value };
+    }
+
+    private string FavMap
+    {
+        get => currentUser.Favourites.Maps.FirstOrDefault();
+        set => currentUser.Favourites.Maps = new List<string> { value };
+    }
+
+    private void SaveChanges()
+    {
+        InitializationService.Userdata[selectedUsername] = currentUser;
+    }
+
+    private void UpdateFavOperators()
+    {
+        SaveChanges();
+    }
+
+    private void UpdateFavMaps()
+    {
+        SaveChanges();
+    }
+
+    private List<KD> MergeKDsByOperator(List<KD> kds)
+    {
+        return kds.GroupBy(k => k.Op).Select(g => new KD
+            {
+                Op = g.Key,
+                Deaths = g.Sum(k => k.Deaths),
+                Kills = g.SelectMany(k => k.Kills).ToList(),
+                Map = g.First().Map,
+                HoursPlayedAtSubmission = g.Sum(k => k.HoursPlayedAtSubmission)
+            }).OrderBy(k => k.Op).ToList();
+    }
+
+    private void OnUserSelected()
+    {
+        LoadUser(selectedUsername);
+    }
+
+    private void NavigateToEditKDs()
+    {
+        Navigation.NavigateTo("/edit_kds");
+    }
+}

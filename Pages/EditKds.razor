@@ -1,0 +1,261 @@
+﻿@page "/edit_kds"
+@inject NavigationManager Navigation
+@using FPSHome
+@using FPSHome.Services
+@inject InitializationService InitializationService
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using KD = FPSHome.Services.InitializationService.KD
+@using Kill = FPSHome.Services.InitializationService.Kill
+@using User = FPSHome.Services.InitializationService.User
+
+<PageTitle>Edit K/D's</PageTitle>
+
+<FPSHome.wwwroot.Shared.Menubar />
+
+@if (InitializationService.currentuser != (null, null))
+{
+    <header class="title-section" style="background-image: url('/images/nicelooking.gif');">
+        <h1 class="title">Edit K/D Ratios</h1>
+    </header>
+
+    <div class="page-container">
+        <div class="content-container">
+            <section class="profile-section">
+                <div class="profile-bubble">
+                    <div class="profile-form">
+                        <h2>@InitializationService.currentuser.Item1's K/D Ratios</h2>
+                        <div class="form-group">
+                            <button class="btn-edit" @onclick="AddNewKD">Add New K/D</button>
+                        </div>
+                        @{ counter = 0; }
+                    @foreach (var kd in currentUser.Kds)
+                        {
+                            counter++; 
+                            <div class="form-group">
+                                <details>
+                                    <summary>@($"{counter}. {kd.Op}")</summary>
+                                    <div class="form-group">
+                                        <label for="op">Operator</label>
+                                        <select id="op" class="form-control" value="@kd.Op" @onchange="e => OnOperatorChange(kd, e)">
+                                            @foreach (var op in operators.Keys)
+                                            {
+                                                <option value="@op">@op</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="deaths">Deaths</label>
+                                        <InputNumber id="deaths" class="form-control" @bind-Value="kd.Deaths" Min="0" Max="8" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="hoursPlayedAtSubmission">Hours Played</label>
+                                        <InputNumber id="hoursPlayedAtSubmission" class="form-control" @bind-Value="kd.HoursPlayedAtSubmission" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="map">Map</label>
+                                        <select id="map" class="form-control" @bind="kd.Map">
+                                            @foreach (var map in maps)
+                                            {
+                                                <option value="@map">@map</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <br />
+                                        <h3>Kills</h3>
+                                        @foreach (var kill in kd.Kills)
+                                        {
+                                            <div class="kill-group">
+                                                <div class="form-group">
+                                                    <label for="weapon">Weapon</label>
+                                                    <select id="weapon" class="form-control" @bind="kill.Weapon">
+                                                        @foreach (var weapon in operators[kd.Op].WeaponsUsed)
+                                                        {
+                                                            <option value="@weapon">@weapon</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <button class="btn-edit" @onclick="() => RemoveKill(kd, kill)">Remove Kill</button>
+                                                </div>
+                                            </div>
+                                            <br />
+                                        }
+                                        <button class="btn-edit" @onclick="() => AddNewKill(kd)">Add New Kill</button>
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn-edit" @onclick="() => RemoveKD(kd)">Remove K/D</button>
+                                    </div>
+                                </details>
+                            </div>
+                        }
+
+                        <div class="form-group">
+                            <button class="btn-edit" @onclick="SaveChanges">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 FPS Stats Tracker. All rights reserved.</p>
+    </footer>
+
+    <button class="help-button">?</button>
+}
+
+@code {
+    private User currentUser;
+    private List<string> maps = InitializationService.Maps;
+    private int counter;
+
+    protected override void OnInitialized()
+    {
+        if (InitializationService.currentuser == (null, null) ||
+            InitializationService.currentuser.Item1 == null ||
+            InitializationService.currentuser.Item2 == null)
+        {
+            Navigation.NavigateTo("/home");
+        }
+        else
+        {
+            currentUser = InitializationService.currentuser.Item2;
+            currentUser.Kds = currentUser.Kds.OrderBy(kd => kd.Op).ToList();
+        }
+    }
+
+    private void AddNewKD()
+    {
+        var newKD = new KD
+        {
+            Op = operators.Keys.First(),
+            Kills = new List<Kill>(),
+            Deaths = 0,
+            HoursPlayedAtSubmission = 0,
+            Map = maps.First()
+        };
+        currentUser.Kds.Add(newKD);
+    }
+
+    private void RemoveKD(KD kd)
+    {
+        currentUser.Kds.Remove(kd);
+    }
+
+    private void AddNewKill(KD kd)
+    {
+        var newKill = new Kill
+        {
+            Attacking = operators[kd.Op].Attacker,
+            Weapon = operators[kd.Op].WeaponsUsed.First()
+        };
+        kd.Kills.Add(newKill);
+    }
+
+    private void RemoveKill(KD kd, Kill kill)
+    {
+        kd.Kills.Remove(kill);
+    }
+
+    private void SaveChanges()
+    {
+        InitializationService.Userdata[InitializationService.currentuser.Item1] = currentUser;
+    }
+
+    private class Operator
+    {
+        public List<string> WeaponsUsed;
+        public bool Attacker;
+    }
+
+    private void UpdateOperator(KD kd)
+    {
+        foreach (var kill in kd.Kills)
+        {
+            kill.Attacking = operators[kd.Op].Attacker;
+            kill.Weapon = operators[kd.Op].WeaponsUsed.First();
+        }
+    }
+
+    private void OnOperatorChange(KD kd, ChangeEventArgs e)
+    {
+        kd.Op = e.Value.ToString();
+        UpdateOperator(kd);
+    }
+
+
+
+    Dictionary<string, Operator> operators = new Dictionary<string, Operator>
+    {
+    { "Sledge", new Operator { Attacker = true, WeaponsUsed = new List<string> { "L85A2", "M590A1", "P226 Mk 25", "SMG-11", "Frag Grenade", "Stun Grenade" } } },
+    { "Thatcher", new Operator { Attacker = true, WeaponsUsed = new List<string> { "AR33", "L85A2", "M590A1", "P226 Mk 25", "Claymore", "Breach Charge" } } },
+    { "Smoke", new Operator { Attacker = false, WeaponsUsed = new List<string> { "FMG-9", "M590A1", "P226 Mk 25", "SMG-11", "Impact Grenade", "Barbed Wire" } } },
+    { "Mute", new Operator { Attacker = false, WeaponsUsed = new List<string> { "MP5K", "M590A1", "P226 Mk 25", "SMG-11", "Bulletproof Camera", "Nitro Cell" } } },
+    { "Ash", new Operator { Attacker = true, WeaponsUsed = new List<string> { "G36C", "R4-C", "5.7 USG", "M45 MEUSOC", "Breach Charge", "Claymore" } } },
+    { "Thermite", new Operator { Attacker = true, WeaponsUsed = new List<string> { "556XI", "M1014", "5.7 USG", "M45 MEUSOC", "Claymore", "Stun Grenade" } } },
+    { "Castle", new Operator { Attacker = false, WeaponsUsed = new List<string> { "UMP45", "M1014", "5.7 USG", "M45 MEUSOC", "Bulletproof Camera", "Impact Grenade" } } },
+    { "Pulse", new Operator { Attacker = false, WeaponsUsed = new List<string> { "UMP45", "M1014", "5.7 USG", "M45 MEUSOC", "Nitro Cell", "Barbed Wire" } } },
+    { "Twitch", new Operator { Attacker = true, WeaponsUsed = new List<string> { "F2", "417", "SG-CQB", "P9", "LFP586", "Claymore", "Breach Charge" } } },
+    { "Montagne", new Operator { Attacker = true, WeaponsUsed = new List<string> { "Le Roc", "P9", "LFP586", "Smoke Grenade", "Stun Grenade" } } },
+    { "Doc", new Operator { Attacker = false, WeaponsUsed = new List<string> { "MP5", "SG-CQB", "P90", "P9", "LFP586", "Bulletproof Camera", "Barbed Wire" } } },
+    { "Rook", new Operator { Attacker = false, WeaponsUsed = new List<string> { "MP5", "SG-CQB", "P90", "P9", "LFP586", "Impact Grenade", "Deployable Shield" } } },
+    { "Glaz", new Operator { Attacker = true, WeaponsUsed = new List<string> { "OTs-03", "PMM", "GSH-18", "Frag Grenade", "Smoke Grenade" } } },
+    { "Fuze", new Operator { Attacker = true, WeaponsUsed = new List<string> { "6P41", "AK-12", "Ballistic Shield", "PMM", "GSH-18", "Hard Breach Charge", "Smoke Grenade" } } },
+    { "Kapkan", new Operator { Attacker = false, WeaponsUsed = new List<string> { "9x19VSN", "SASG-12", "PMM", "GSH-18", "Impact Grenade", "Nitro Cell" } } },
+    { "Tachanka", new Operator { Attacker = false, WeaponsUsed = new List<string> { "9x19VSN", "SASG-12", "DP27", "PMM", "GSH-18", "Deployable Shield", "Proximity Alarm" } } },
+    { "Blitz", new Operator { Attacker = true, WeaponsUsed = new List<string> { "G52-Tactical Shield", "P12", "Smoke Grenade", "Breach Charge" } } },
+    { "IQ", new Operator { Attacker = true, WeaponsUsed = new List<string> { "AUG A2", "552 Commando", "G8A1", "P12", "Breach Charge", "Claymore" } } },
+    { "Jäger", new Operator { Attacker = false, WeaponsUsed = new List<string> { "M870", "416-C Carbine", "P12", "Bulletproof Camera", "Barbed Wire" } } },
+    { "Bandit", new Operator { Attacker = false, WeaponsUsed = new List<string> { "MP7", "M870", "P12", "Nitro Cell", "Barbed Wire" } } },
+    { "Buck", new Operator { Attacker = true, WeaponsUsed = new List<string> { "C8-SFW", "CAMRS", "Mk1 9mm", "Frag Grenade", "Hard Breach Charge" } } },
+    { "Frost", new Operator { Attacker = false, WeaponsUsed = new List<string> { "Super 90", "9mm C1", "Mk1 9mm", "Bulletproof Camera", "Deployable Shield" } } },
+    { "Blackbeard", new Operator { Attacker = true, WeaponsUsed = new List<string> { "Mk17 CQB", "SR-25", "D-50", "Breach Charge", "Stun Grenade" } } },
+    { "Valkyrie", new Operator { Attacker = false, WeaponsUsed = new List<string> { "MPX", "SPAS-12", "D-50", "Nitro Cell", "Impact Grenade" } } },
+    { "Capitão", new Operator { Attacker = true, WeaponsUsed = new List<string> { "M249", "PARA-308", "PRB92", "Hard Breach Charge", "Stun Grenade" } } },
+    { "Caveira", new Operator { Attacker = false, WeaponsUsed = new List<string> { "M12", "SPAS-15", "Luison", "Impact Grenade", "Bulletproof Camera" } } },
+    { "Hibana", new Operator { Attacker = true, WeaponsUsed = new List<string> { "TYPE-89", "SuperNova", "P229", "Bearing 9", "Impact EMP Grenade", "Stun Grenade" } } },
+    { "Echo", new Operator { Attacker = false, WeaponsUsed = new List<string> { "MP5SD", "SuperNova", "P229", "Bearing 9", "Bulletproof Camera", "Impact Grenade" } } },
+    { "Jackal", new Operator { Attacker = true, WeaponsUsed = new List<string> { "C7E", "PDW9", "ITA12L", "USP40", "ITA12S", "Claymore", "Smoke Grenade" } } },
+    { "Mira", new Operator { Attacker = false, WeaponsUsed = new List<string> { "VECTOR .45 ACP", "ITA12L", "USP40", "ITA12S", "Nitro Cell", "Barbed Wire" } } },
+    { "Ying", new Operator { Attacker = true, WeaponsUsed = new List<string> { "T-95 LSW", "SIX12", "Q929", "Breach Charge", "Smoke Grenade" } } },
+    { "Lesion", new Operator { Attacker = false, WeaponsUsed = new List<string> { "SIX12 SD", "T-5 SMG", "Q929", "Impact Grenade", "Bulletproof Camera" } } },
+    { "Zofia", new Operator { Attacker = true, WeaponsUsed = new List<string> { "LMG-E", "M762", "RG15", "Breach Charge", "Claymore" } } },
+    { "Ela", new Operator { Attacker = false, WeaponsUsed = new List<string> { "Scorpion EVO 3 A1", "FO-12", "RG15", "Barbed Wire", "Deployable Shield" } } },
+    { "Dokkaebi", new Operator { Attacker = true, WeaponsUsed = new List<string> { "Mk 14 EBR", "BOSG.12.2", "C75 Auto", "SMG-12", "Smoke Grenade", "Stun Grenade" } } },
+    { "Vigil", new Operator { Attacker = false, WeaponsUsed = new List<string> { "K1A", "BOSG.12.2", "C75 Auto", "SMG-12", "Impact Grenade", "Bulletproof Camera" } } },
+    { "Lion", new Operator { Attacker = true, WeaponsUsed = new List<string> { "V308", "417", "SG-CQB", "P9", "LFP586", "Stun Grenade", "Claymore" } } },
+    { "Finka", new Operator { Attacker = true, WeaponsUsed = new List<string> { "Spear .308", "6P41", "SASG-12", "PMM", "GSH-18", "Frag Grenade", "Stun Grenade" } } },
+    { "Maestro", new Operator { Attacker = false, WeaponsUsed = new List<string> { "ALDA 5.56", "ACS12", "KERATOS .357", "Bailiff 410", "Barbed Wire", "Deployable Shield" } } },
+    { "Alibi", new Operator { Attacker = false, WeaponsUsed = new List<string> { "Mx4 Storm", "ACS12", "KERATOS .357", "Bailiff 410", "Impact Grenade", "Deployable Shield" } } },
+    { "Maverick", new Operator { Attacker = true, WeaponsUsed = new List<string> { "M4", "AR-15.50", "1911 TACOPS", "Smoke Grenade", "Claymore" } } },
+    { "Clash", new Operator { Attacker = false, WeaponsUsed = new List<string> { "CCE Shield", "SPSMG9", "P-10C", "Barbed Wire", "Impact Grenade" } } },
+    { "Nomad", new Operator { Attacker = true, WeaponsUsed = new List<string> { "AK-74M", "ARX200", "44 Mag Semi-Auto", "Stun Grenade", "Breach Charge" } } },
+    { "Kaid", new Operator { Attacker = false, WeaponsUsed = new List<string> { "AUG A3", "TCSG12", "44 Mag Semi-Auto", "Barbed Wire", "Nitro Cell" } } },
+    { "Gridlock", new Operator { Attacker = true, WeaponsUsed = new List<string> { "F90", "M249", "Super Shorty", "SDP 9mm", "Smoke Grenade", "Breach Charge" } } },
+    { "Mozzie", new Operator { Attacker = false, WeaponsUsed = new List<string> { "Commando 9", "P10 RONI", "Super Shorty", "SDP 9mm", "Barbed Wire", "Nitro Cell" } } },
+    { "Nøkk", new Operator { Attacker = true, WeaponsUsed = new List<string> { "FMG-9", "SIX12 SD", "5.7 USG", "D-50", "Hard Breach Charge", "Frag Grenade" } } },
+    { "Warden", new Operator { Attacker = false, WeaponsUsed = new List<string> { "M590A1", "MPX", "P-10C", "SMG-12", "Impact Grenade", "Deployable Shield" } } },
+    { "Amaru", new Operator { Attacker = true, WeaponsUsed = new List<string> { "G8A1", "SuperNova", "SMG-11", "GONNE-6", "Hard Breach Charge", "Stun Grenade" } } },
+    { "Goyo", new Operator { Attacker = false, WeaponsUsed = new List<string> { "VECTOR .45 ACP", "TCSG12", "P229", "Proximity Alarm", "Nitro Cell" } } },
+    { "Kali", new Operator { Attacker = true, WeaponsUsed = new List<string> { "CSRX 300", "SPSMG9", "C75 Auto", "Claymore", "Breach Charge" } } },
+    { "Wamai", new Operator { Attacker = false, WeaponsUsed = new List<string> { "AUG A2", "Mp5k", "D-40", "Barbed Wire", "Deployable Shield" } } },
+    { "Iana", new Operator { Attacker = true, WeaponsUsed = new List<string> { "ARX200", "G36C", "Mk1 9mm", "Smoke Grenade", "Frag Grenade" } } },
+    { "Oryx", new Operator { Attacker = false, WeaponsUsed = new List<string> { "SPAS-12", "MP5", "Bailiff 410", "USP40", "Barbed Wire", "Bulletproof Camera" } } },
+    { "Ace", new Operator { Attacker = true, WeaponsUsed = new List<string> { "AK-12", "M1014", "P9", "Smoke Grenade", "Claymore" } } },
+    { "Melusi", new Operator { Attacker = false, WeaponsUsed = new List<string> { "MP5", "Super 90", "RG15", "Impact Grenade", "Bulletproof Camera" } } },
+    { "Zero", new Operator { Attacker = true, WeaponsUsed = new List<string> { "SC3000K", "MP7", "5.7 USG", "Breach Charge", "Claymore" } } },
+    { "Aruni", new Operator { Attacker = false, WeaponsUsed = new List<string> { "P10 RONI", "Mk 14 EBR", "PRB92", "Barbed Wire", "Bulletproof Camera" } } },
+    { "Flores", new Operator { Attacker = true, WeaponsUsed = new List<string> { "AR33", "SR-25", "GSH-18", "Claymore", "Stun Grenade" } } },
+    { "Thunderbird", new Operator { Attacker = false, WeaponsUsed = new List<string> { "Spear .308", "SPAS-15", "Bearing 9", "Q-929", "Barbed Wire", "Impact Grenade" } } },
+    { "Osa", new Operator { Attacker = true, WeaponsUsed = new List<string> { "556XI", "PDW9", "PMM", "Smoke Grenade", "Claymore" } } },
+    { "Thorn", new Operator { Attacker = false, WeaponsUsed = new List<string> { "UZK50GI", "M870", "1911 TACOPS", "Barbed Wire", "Deployable Shield" } } },
+    { "Sens", new Operator { Attacker = true, WeaponsUsed = new List<string> { "Pof-9", "417", "GONNE-6", "Bailiff 410", "Smoke Grenade", "Hard Breach Charge" } } },
+    { "Solis", new Operator { Attacker = false, WeaponsUsed = new List<string> { "P90", "ITA12S", "SMG-11", "Impact Grenade", "Bulletproof Camera" } } },
+    { "Brava", new Operator { Attacker = true, WeaponsUsed = new List<string> { "Para-308", "CAMRS", "USP40", "Breach Charge", "Claymore" } } },
+    { "Deimos", new Operator { Attacker = true, WeaponsUsed = new List<string> { "Vector", "Mk 14 EBR", "Keratos .357", "Impact EMP Grenade", "Claymore" } } },
+    { "Fenrir", new Operator { Attacker = false, WeaponsUsed = new List<string> { "MP7", "SASG-12", "Bailiff 410", "5.7 USG", "Barbed Wire", "Bulletproof Camera" } } }
+};
+}

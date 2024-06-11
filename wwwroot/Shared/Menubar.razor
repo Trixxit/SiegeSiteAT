@@ -1,9 +1,12 @@
-﻿<div class="navbar">
+﻿@inject NavigationManager Navigation
+@inject FPSHome.Services.InitializationService InitializationService
+
+<div class="navbar">
     <div class="logo">
         <img src="/images/logo1.jpg" alt="FPS Stats Tracker Logo" />
     </div>
     <div class="menu">
-        <a href="/">Home</a>
+        <a href="/home">Home</a>
         <a href="/about">About us</a>
         <div class="dropdown">
             <button class="dropbtn">
@@ -20,13 +23,16 @@
                         <a href="/siege/home">Home</a>
                         <a href="/siege/stats">Stats</a>
                         <a href="/siege/operators">Operators</a>
+                    <!--    
                         <a href="/siege/maps">Maps</a>
                         <a href="/siege/home">Guides</a>
+                        -->
                     </div>
                 </div>
-                <a style="color = black;">More coming soon</a>
+                <a style="color: black;">More coming soon</a>
             </div>
         </div>
+        <!--  
         <a href="/events">Events</a>
         <a href="/news">News</a>
         <div class="dropdown">
@@ -39,9 +45,46 @@
                 <a href="/contact">Contact</a>
             </div>
         </div>
+        -->
     </div>
     <div class="auth-buttons">
-        <button class="btn-login">Login</button>
-        <button class="btn-signup">Sign Up</button>
+        @if (FPSHome.Services.InitializationService.currentuser == (null, null))
+        {
+            <button class="btn-login" @onclick="Login">Login</button>
+            <button class="btn-signup" @onclick="Signup">Sign Up</button>
+        }
+        else
+        {
+            <button class="btn-profile" @onclick="Profile">Profile</button>
+            <button class="btn-logout" @onclick="Logout">Logout</button>
+        }
     </div>
 </div>
+
+@code {
+    private async Task Login()
+    {
+        Navigation.NavigateTo("/login");
+        return;
+    }
+
+    private async Task Signup()
+    {
+        Navigation.NavigateTo("/signup");
+        return;
+    }
+
+    private async Task Logout()
+    {
+        FPSHome.Services.InitializationService.currentuser = (null, null);
+        InitializationService.a = false;
+        Navigation.NavigateTo("/");
+        return;
+    }
+
+    private async Task Profile()
+    {
+        Navigation.NavigateTo("/profile");
+        return;
+    }
+}

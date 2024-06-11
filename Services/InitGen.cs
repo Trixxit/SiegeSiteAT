@@ -9,18 +9,21 @@ namespace FPSHome.Services
 {
     public partial class InitializationService
     {
-        private static readonly List<string> Maps = new List<string>
+        public static (string?, User?) currentuser = (null, null);
+        public bool a = false;
+
+        public static readonly List<string> Maps = new List<string>
         {
             "Bank", "Lair", "Nighthaven Labs", "Chalet", "Clubhouse", "Coastline", "Consulate",
             "Oregon", "Outback", "Skyscraper", "Emerald Plains", "Theme Park", "Villa", "Kafe Dostoyevsky", "Kanal"
         };
 
-        private static Dictionary<string, Operator> OperatorsData;
+        public static Dictionary<string, Operator> OperatorsData;
 
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         public bool IsTaskRunning { get; private set; } = false;
 
-        private class Operator
+        public class Operator
         {
             public bool attacker { get; set; }
             public string affiliation { get; set; }
@@ -122,7 +125,10 @@ namespace FPSHome.Services
             var operatorName = faker.PickRandom<string>(OperatorsData.Keys);
             var mapName = faker.PickRandom(Maps);
             var killsCount = Math.Round(Generate(faker, 0, 15, Normalize(hoursplayed, maxInput: maxHours)));
-            int deaths = 8 - (int)Math.Round(Generate(faker, 0, 8, Normalize(hoursplayed, maxInput: maxHours, maxOutput:8)));
+            int deaths = 8 - (int)Math.Round(Generate(faker, 0, 8, Normalize(hoursplayed, maxInput: maxHours, maxOutput: 8)));
+
+            // Adjust killsCount to balance the probability distribution
+            killsCount = AdjustKillCount(killsCount, hoursplayed, maxHours);
 
             var killsList = new List<Kill>();
             for (int i = 0; i < killsCount; i++)
@@ -140,6 +146,31 @@ namespace FPSHome.Services
                 Map = mapName,
                 HoursPlayedAtSubmission = hoursplayed
             };
+        }
+
+        private static double AdjustKillCount(double killsCount, double hoursPlayed, double maxHours)
+        {
+            double adjustedKills = killsCount;
+            double probabilityThreshold = 0.02; 
+
+            if (killsCount >= 15)
+            {
+                if (new Random().NextDouble() > probabilityThreshold)
+                {
+                    adjustedKills = new Random().Next(10, 15);
+                }
+            }
+
+            if (hoursPlayed >= maxHours * 0.8)
+            {
+                adjustedKills = Math.Min(adjustedKills + 1, 15);
+            }
+            else if (hoursPlayed >= maxHours * 0.6)
+            {
+                adjustedKills = Math.Min(adjustedKills + 0.5, 15);
+            }
+
+            return adjustedKills;
         }
 
         public static double Generate(Faker faker, double min, double max, double weight)

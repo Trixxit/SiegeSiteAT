@@ -1,5 +1,6 @@
 ﻿#define ForceReset
 //#define SkipLoading
+#define SkipGen
 
 using System;
 using System.Collections.Concurrent;
@@ -13,6 +14,14 @@ namespace FPSHome.Services
 {
     public partial class InitializationService
     {
+
+
+        /*!!! 
+         --- Sample User ---
+        Username: Christina.Schmitt70
+        Password: vazCQOg1dj
+        */
+
         private readonly IJSRuntime _jsRuntime;
         private readonly HttpClient _httpClient;
 
@@ -43,7 +52,9 @@ namespace FPSHome.Services
                     await _jsRuntime.InvokeVoidAsync("logMessage", "Initting owo");
                     await LoadStoreUserData();
                     await Task.Delay(1000);
+#if !SkipGen
                     await GenerateRandomPeople();
+#endif
                     await _jsRuntime.InvokeVoidAsync("logMessage", "Finished!");
                 }
                 else

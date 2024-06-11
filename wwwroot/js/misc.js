@@ -31,3 +31,22 @@ window.fetchWithCorsAnywhere = async function (url) {
     const text = await response.text();
     return text;
 };
+
+window.fileInterop = {
+    readFile: async function (filePath) {
+        const response = await fetch(filePath);
+        if (response.ok) {
+            return await response.text();
+        }
+        return null;
+    },
+    writeFile: async function (filePath, content) {
+        const blob = new Blob([content], { type: "application/json" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filePath;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+};
