@@ -23,6 +23,8 @@
 </head>
 
 <script>
+    let chartInstances = {};
+
     function loadChartJs(callback) {
         if (typeof Chart !== 'undefined') {
             callback();
@@ -31,7 +33,7 @@
             console.log("chart is undefined");
             var script = document.createElement('script');
             script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
-            script.onload = function() {
+            script.onload = function () {
                 console.log("chart loaded");
                 callback();
             };
@@ -41,7 +43,14 @@
 
     function generateChart(canvasId, chartData) {
         const ctx = document.getElementById(canvasId).getContext('2d');
-        new Chart(ctx, {
+
+        // Destroy existing chart instance if it exists
+        if (chartInstances[canvasId]) {
+            chartInstances[canvasId].destroy();
+        }
+
+        // Create new chart instance and store it in the chartInstances object
+        chartInstances[canvasId] = new Chart(ctx, {
             type: 'line',
             data: chartData,
             options: {
@@ -63,12 +72,12 @@
         });
     }
 
-
     window.addEventListener('DOMContentLoaded', (event) => {
-        loadChartJs(function() {
+        loadChartJs(function () {
             console.log('Charts are ready to be generated');
         });
     });
+
 </script>
 
 <div class="filter-container">
@@ -354,6 +363,7 @@
         await GenerateCharts();
         StateHasChanged();
     }
+
 
     private void CalculateStats()
     {
